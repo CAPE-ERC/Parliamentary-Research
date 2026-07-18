@@ -1,0 +1,24 @@
+corpus:
+  n_debates: 411
+  raw_dir: data/raw
+  processed_dir: data/processed
+
+topic_layer:
+  method: bertopic
+  min_topic_size: 15
+
+procedural_layer:
+  tags:
+    - chair_ruling
+    - interruption
+    - withdrawal_request
+    - so_citation
+    - pnq_transfer
+
+linking_layer:
+  model: mixed_effects
+  random_effects: [speaker, chair]
+
+outcome_layer:
+  method: granger
+  max_lag: 3

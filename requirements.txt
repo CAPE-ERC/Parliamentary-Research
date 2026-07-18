@@ -1,0 +1,12 @@
+bertopic
+sentence-transformers
+scikit-learn
+pandas
+numpy
+torch
+statsmodels
+linearmodels
+scipy
+matplotlib
+pyyaml
+pytest
