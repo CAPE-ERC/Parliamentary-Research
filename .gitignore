@@ -7,11 +7,13 @@ venv/
 env/
 .ipynb_checkpoints/
 
-# Data (raw/processed debate data is not versioned; see data/README.md)
+# Data (raw/processed/external debate data is not versioned; see data/README.md)
 data/raw/*
 data/processed/*
+data/external/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+!data/external/.gitkeep
 
 # Models / large artifacts
 *.pt
