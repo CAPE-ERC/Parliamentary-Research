@@ -10,3 +10,10 @@ scipy
 matplotlib
 pyyaml
 pytest
+pdfplumber
+pdfminer.six
+langdetect
+pyarrow
+tqdm
+umap-learn
+gensim
