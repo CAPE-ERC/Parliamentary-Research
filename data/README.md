@@ -39,3 +39,17 @@ note that pure-language clusters (e.g. French/Kreol function words) can score
 high on coherence without being real policy topics, while low coherence
 reliably flags noise/procedural-attribution clusters (MP surname co-mentions)
 worth dropping or merging rather than naming.
+
+## Tracked exception: `processed/topic_taxonomy_labeled.xlsx`
+
+The completed human review of the above: all 199 topics labeled
+(`label`, `label_type` - Policy/Governance/Procedure/Procedure-Noise/
+Discourse-Noise/Language-Noise, `review_confidence` - High/Medium/Low,
+`human_review_note`), plus a `Label Guide` sheet (the labelling protocol
+and decision rules per type) and `QA Summary` sheet (totals and an
+interpretive note: procedural/noise clusters are retained deliberately -
+excluded from policy-attention share, but analytically useful for the
+Procedural layer's floor-control/interruption/ruling signal). This is the
+source of truth for Stage 2 (fine-tuned classifier) training labels: the
+50 `Policy`-type topics become distinct classes, everything else collapses
+to a single non-policy catch-all class.
