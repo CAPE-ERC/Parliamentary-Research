@@ -16,6 +16,12 @@ topic_layer:
   nr_topics: null
   exclude_stage_directions: true
   min_utterance_chars_for_topics: 10
+  classifier:
+    base_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+    non_policy_cap: 5000
+    num_epochs: 3
+    max_length: 64
+    batch_size: 16
 
 procedural_layer:
   tags:

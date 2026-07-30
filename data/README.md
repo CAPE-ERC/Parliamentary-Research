@@ -53,3 +53,10 @@ Procedural layer's floor-control/interruption/ruling signal). This is the
 source of truth for Stage 2 (fine-tuned classifier) training labels: the
 50 `Policy`-type topics become distinct classes, everything else collapses
 to a single non-policy catch-all class.
+
+## Tracked exceptions: `processed/corpus_quality_report.md`, `processed/classifier_eval_report.md`
+
+Small, human-readable summary docs worth keeping on GitHub for reference
+(e.g. for the Methodology/Results write-up) rather than regenerating
+locally each time: Layer 0 parse/role/language stats, and Stage 2's
+per-class precision/recall/F1 on the held-out validation split.
