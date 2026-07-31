@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CAPE Parliamentary Research — Project Dashboard</title>
+<meta name="description" content="Progress dashboard: procedural power and policy attention in the Mauritius National Assembly (2015-2025)." />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f6f7fa;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --success: #006300;
+
+    --series-1: #2a78d6; /* blue */
+    --series-2: #eb6834; /* orange */
+    --series-3: #1baf7a; /* aqua */
+    --series-4: #eda100; /* yellow */
+    --series-5: #e87ba4; /* magenta */
+    --series-6: #008300; /* green */
+    --series-7: #4a3aa7; /* violet */
+    --series-8: #e34948; /* red */
+
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+
+    --seq-100: #cde2fb; --seq-450: #2a78d6; --seq-700: #0d366b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0a0c10;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --gridline: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --success: #0ca30c;
+
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --series-6: #008300;
+      --series-7: #9085e9;
+      --series-8: #e66767;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  *:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* Headings: an institutional serif, nodding to Hansard's own document
+     tradition - reserved for prose headings only. Data and figures (KPIs,
+     tables, chart labels) stay in the system sans throughout. */
+  h1, h2, h3 {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  header.hero {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-1);
+  }
+  header.hero .eyebrow {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  header.hero h1 {
+    font-size: clamp(24px, 4vw, 36px);
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+  header.hero p.lede {
+    color: var(--text-secondary);
+    font-size: 16px;
+    max-width: 70ch;
+    margin: 0 0 24px;
+  }
+  .repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--series-1);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .repo-link:hover { text-decoration: underline; }
+
+  /* status pill nav */
+  .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--page);
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .pill:hover { border-color: var(--text-muted); }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.done { background: var(--status-good); }
+  .dot.progress { background: var(--status-warning); }
+  .dot.todo { background: var(--baseline); }
+
+  section { padding: 40px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  section h2 {
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  section .section-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  section h3 { font-size: 16px; margin: 32px 0 12px; }
+  p { color: var(--text-secondary); }
+  p.discussion { max-width: 78ch; }
+  a { color: var(--series-1); }
+
+  /* KPI stat tiles */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--gridline);
+    border: 1px solid var(--gridline);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .kpi-tile {
+    background: var(--surface-1);
+    padding: 18px 16px;
+  }
+  .kpi-tile .value {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .kpi-tile .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* bar chart (horizontal) */
+  .barchart { margin: 16px 0; }
+  .bar-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 220px) 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+  }
+  .bar-row .bar-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    background: var(--gridline);
+    border-radius: 4px;
+    height: 20px;
+    position: relative;
+  }
+  .bar-fill {
+    height: 20px;
+    border-radius: 4px;
+    min-width: 4px;
+  }
+  .bar-row .bar-value {
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    font-weight: 600;
+    min-width: 64px;
+  }
+
+  /* vertical column chart (for small category counts) */
+  .colchart {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 200px;
+    padding: 0 8px 0 0;
+    margin: 20px 0 8px;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    height: 100%;
+  }
+  .col .col-value {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .col .col-bar {
+    width: 100%;
+    max-width: 48px;
+    border-radius: 4px 4px 0 0;
+  }
+  .col .col-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 8px 0 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 12px 0 20px;
+  }
+  caption { text-align: left; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--baseline);
+    padding: 8px 10px;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--gridline);
+    color: var(--text-secondary);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.strong { color: var(--text-primary); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.good { background: color-mix(in srgb, var(--status-good) 16%, transparent); color: var(--status-good); }
+  .badge.warn { background: color-mix(in srgb, var(--status-serious) 18%, transparent); color: var(--status-serious); }
+
+  .callout {
+    border-left: 3px solid var(--series-1);
+    background: color-mix(in srgb, var(--series-1) 6%, var(--surface-1));
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .callout strong { color: var(--text-primary); }
+  .callout.warn { border-left-color: var(--status-serious); background: color-mix(in srgb, var(--status-serious) 6%, var(--surface-1)); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 96px 1fr auto; }
+  }
+
+  .status-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--surface-1);
+  }
+  .status-card h4 { margin: 0 0 8px; font-size: 15px; }
+  .status-card ul { margin: 8px 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 14px; }
+  .status-card li { margin-bottom: 4px; }
+
+  footer {
+    padding: 32px 0 48px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">CAPE — Mauritius Parliamentary Discourse Research</p>
+    <h1>Procedural Power &amp; Policy Attention Pipeline</h1>
+    <p class="lede">
+      A four-layer computational pipeline over 411 Hansard debates of the Mauritius National Assembly
+      (2015–2025), testing whether control over parliamentary procedure shapes which policy topics
+      receive sustained attention. This page tracks implementation progress, methodology, and results
+      layer by layer.
+    </p>
+    <a class="repo-link" href="https://github.com/CAPE-ERC/Parliamentary-Research" target="_blank" rel="noopener">
+      CAPE-ERC/Parliamentary-Research on GitHub &#8594;
+    </a>
+    <nav class="status-row">
+      <a class="pill" href="#layer0"><span class="dot done"></span>Layer 0 — Preprocessing</a>
+      <a class="pill" href="#topic-layer"><span class="dot done"></span>Topic Layer</a>
+      <a class="pill" href="#procedural-layer"><span class="dot done"></span>Procedural Layer</a>
+      <a class="pill" href="#linking-layer"><span class="dot progress"></span>Linking Layer</a>
+      <a class="pill" href="#outcome-layer"><span class="dot todo"></span>Outcome Layer</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <h2>Project overview</h2>
+    <p class="section-meta">Where things stand</p>
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">404<span style="color:var(--text-muted); font-weight:400;">&nbsp;/&nbsp;405</span></div><div class="label">debates parsed</div></div>
+      <div class="kpi-tile"><div class="value">211,567</div><div class="label">utterance records</div></div>
+      <div class="kpi-tile"><div class="value">199</div><div class="label">topics discovered</div></div>
+      <div class="kpi-tile"><div class="value">50</div><div class="label">policy domains labeled</div></div>
+      <div class="kpi-tile"><div class="value">5</div><div class="label">procedural tags</div></div>
+      <div class="kpi-tile"><div class="value">3&nbsp;/&nbsp;4</div><div class="label">layers complete</div></div>
+    </div>
+    <p class="discussion" style="margin-top:20px;">
+      Layer 0 (preprocessing), the Topic layer (two classifier generations, compared head-to-head),
+      and the Procedural layer (rule-based tagging + LSTM) are complete and merged to <code>main</code>.
+      The Linking layer is in progress — a real, researched speaker/party registry is being built to
+      properly power the Government-vs-Opposition test, rather than running the regression on a
+      severely underpowered proxy. The Outcome layer has not started.
+    </p>
+  </section>
+
+  <!-- LAYER 0 -->
+  <section id="layer0">
+    <h2>Layer 0 — Preprocessing</h2>
+    <p class="section-meta">PDF parsing &#8594; speaker/role/language-tagged utterances</p>
+
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">166,155</div><div class="label">dialogue utterances</div></div>
+      <div class="kpi-tile"><div class="value">45,412</div><div class="label">stage directions</div></div>
+      <div class="kpi-tile"><div class="value">86.4%</div><div class="label">English</div></div>
+      <div class="kpi-tile"><div class="value">1</div><div class="label">corrupted source PDF</div></div>
+    </div>
+
+    <h3>Language distribution (dialogue utterances)</h3>
+    <div class="colchart">
+      <div class="col"><div class="col-value">86.4%</div><div class="col-bar" style="height:100%; background:var(--series-1);"></div><div class="col-label">English</div></div>
+      <div class="col"><div class="col-value">6.2%</div><div class="col-bar" style="height:34%; background:var(--series-2);"></div><div class="col-label">French</div></div>
+      <div class="col"><div class="col-value">4.0%</div><div class="col-bar" style="height:24%; background:var(--series-3);"></div><div class="col-label">Kreol&nbsp;Morisien</div></div>
+      <div class="col"><div class="col-value">3.4%</div><div class="col-bar" style="height:21%; background:var(--baseline);"></div><div class="col-label">Other / noise</div></div>
+    </div>
+
+    <p class="discussion">
+      Every debate PDF is parsed with <code>pdfplumber</code>, segmented into speaker-attributed
+      utterances via a regex tag pattern grounded in real Hansard formatting (including multi-line
+      "long-form" tags like <em>"The Vice-Prime Minister, Minister of Energy and Public Utilities
+      (Mr I. Collendavelloo):"</em>), and role/party-resolved using each debate's own printed
+      Cabinet and Officers list — so ministerial reshuffles are picked up automatically per sitting
+      rather than assumed static. Stage directions (interruptions, sitting suspensions) are kept as
+      their own structural signal, not folded into speech.
+    </p>
+    <div class="callout">
+      <strong>fastText → langdetect substitution.</strong> The milestone spec calls for fastText
+      language ID; it requires a C++ build toolchain unavailable on this machine. <code>langdetect</code>
+      plus a Kreol Morisien keyword heuristic was used instead — documented in code, not silently swapped.
+    </div>
+    <div class="callout warn">
+      <strong>Role-resolution refinement in progress.</strong> A gap was found where generic role
+      titles — <em>"The Deputy Speaker," "The Deputy Prime Minister," "The Chairperson"</em> — weren't
+      matched by the original role patterns and fell into <code>unclassified_mp</code>. Fixed in
+      <code>src/preprocessing/roles.py</code>; the corpus is being re-processed now.
+    </div>
+  </section>
+
+  <!-- TOPIC LAYER -->
+  <section id="topic-layer">
+    <h2>Topic Layer</h2>
+    <p class="section-meta">BERTopic discovery &#8594; human review &#8594; two fine-tuned classifiers, compared</p>
+
+    <h3>Stage 1 — BERTopic</h3>
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">199</div><div class="label">topics</div></div>
+      <div class="kpi-tile"><div class="value">0%</div><div class="label">unassigned (was ~48%)</div></div>
+      <div class="kpi-tile"><div class="value">0.48</div><div class="label">mean coherence (c_v)</div></div>
+      <div class="kpi-tile"><div class="value">167</div><div class="label">high-confidence labels</div></div>
+    </div>
+    <p class="discussion">
+      159,913 substantive utterances clustered with a multilingual embedding model (chosen for
+      confirmed English/French/Kreol code-switching). The initial fit left ~48% of utterances
+      unassigned; since the framework requires labeling <em>every</em> utterance, outliers were
+      reassigned to their nearest topic by embedding similarity rather than left out.
+    </p>
+
+    <h3>Human review: 199 / 199 topics labeled</h3>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--series-1)"></span>Policy — 50</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--series-2)"></span>Governance — 16</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--series-3)"></span>Procedure — 62</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--baseline)"></span>Procedure/Noise — 51</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--gridline)"></span>Discourse/Language Noise — 20</span>
+    </div>
+    <div class="barchart" role="img" aria-label="Topic label type breakdown, stacked bar">
+      <div style="display:flex; height:28px; border-radius:4px; overflow:hidden; gap:2px;">
+        <div style="flex:50; background:var(--series-1);" title="Policy: 50"></div>
+        <div style="flex:16; background:var(--series-2);" title="Governance: 16"></div>
+        <div style="flex:62; background:var(--series-3);" title="Procedure: 62"></div>
+        <div style="flex:51; background:var(--baseline);" title="Procedure/Noise: 51"></div>
+        <div style="flex:20; background:var(--gridline);" title="Discourse/Language Noise: 20"></div>
+      </div>
+    </div>
+
+    <h3>Stage 2 — v1 (single-stage) vs v2 (two-stage), fair comparison</h3>
+    <div class="table-wrap">
+    <table>
+      <caption>Both evaluated on one shared held-out set from the full, naturally-distributed corpus (68.9% non_policy — true prevalence), not the skewed downsampled pool the original v1 number came from.</caption>
+      <thead>
+        <tr><th>Model</th><th class="num">Accuracy</th><th class="num">Macro&nbsp;F1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>v1 — single-stage (51-class)</td><td class="num">79.2%</td><td class="num">0.644</td></tr>
+        <tr><td class="strong">v2 — two-stage (gate + domain classifier)</td><td class="num strong">84.7%</td><td class="num strong">0.680</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="discussion">
+      v2 splits the classifier into a binary Policy/non_policy gate followed by a 50-way domain
+      classifier trained only on Policy examples — testing (and confirming) the hypothesis that most
+      v1 error came from the non_policy catch-all confusing edge cases, not from the 50 domains being
+      hard to tell apart. v2 is the recommended model; <code>utterance_policy_labels_two_stage.parquet</code>
+      is the file downstream layers should use.
+    </p>
+
+    <h3>Top predicted policy domains (full corpus, v2)</h3>
+    <div class="barchart" role="img" aria-label="Top ten predicted policy domains by utterance count">
+      <div class="bar-row"><div class="bar-label">Healthcare services &amp; hospitals</div><div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--series-1);"></div></div><div class="bar-value">3,443</div></div>
+      <div class="bar-row"><div class="bar-label">Water supply &amp; drainage</div><div class="bar-track"><div class="bar-fill" style="width:94%; background:var(--series-1);"></div></div><div class="bar-value">3,237</div></div>
+      <div class="bar-row"><div class="bar-label">Budget &amp; economic policy</div><div class="bar-track"><div class="bar-fill" style="width:91%; background:var(--series-1);"></div></div><div class="bar-value">3,147</div></div>
+      <div class="bar-row"><div class="bar-label">Foreign affairs &amp; Chagos</div><div class="bar-track"><div class="bar-fill" style="width:79%; background:var(--series-1);"></div></div><div class="bar-value">2,729</div></div>
+      <div class="bar-row"><div class="bar-label">Road construction &amp; traffic</div><div class="bar-track"><div class="bar-fill" style="width:75%; background:var(--series-1);"></div></div><div class="bar-value">2,572</div></div>
+      <div class="bar-row"><div class="bar-label">Primary &amp; secondary education</div><div class="bar-track"><div class="bar-fill" style="width:69%; background:var(--series-1);"></div></div><div class="bar-value">2,369</div></div>
+      <div class="bar-row"><div class="bar-label">Police investigations</div><div class="bar-track"><div class="bar-fill" style="width:66%; background:var(--series-1);"></div></div><div class="bar-value">2,276</div></div>
+      <div class="bar-row"><div class="bar-label">Public finance &amp; banking</div><div class="bar-track"><div class="bar-fill" style="width:65%; background:var(--series-1);"></div></div><div class="bar-value">2,240</div></div>
+      <div class="bar-row"><div class="bar-label">Sport &amp; athlete development</div><div class="bar-track"><div class="bar-fill" style="width:60%; background:var(--series-1);"></div></div><div class="bar-value">2,070</div></div>
+      <div class="bar-row"><div class="bar-label">Drug control &amp; trafficking</div><div class="bar-track"><div class="bar-fill" style="width:49%; background:var(--series-1);"></div></div><div class="bar-value">1,704</div></div>
+    </div>
+    <p class="discussion" style="font-size:13px;">
+      Of 159,913 utterances, 58,624 (36.7%) were predicted as one of the 50 Policy domains; the
+      remaining 101,289 (63.3%) as non_policy — governance, procedure, and discourse noise, per the
+      human-labeled taxonomy's own design.
+    </p>
+  </section>
+
+  <!-- PROCEDURAL LAYER -->
+  <section id="procedural-layer">
+    <h2>Procedural Layer</h2>
+    <p class="section-meta">Rule-based tagging + LSTM sequence classifier, multi-label</p>
+
+    <div class="barchart" role="img" aria-label="Procedural tag counts">
+      <div class="bar-row"><div class="bar-label">Interruption</div><div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--series-1);"></div></div><div class="bar-value">27,607</div></div>
+      <div class="bar-row"><div class="bar-label">Withdrawal request</div><div class="bar-track"><div class="bar-fill" style="width:21%; background:var(--series-2);"></div></div><div class="bar-value">5,706</div></div>
+      <div class="bar-row"><div class="bar-label">Chair ruling</div><div class="bar-track"><div class="bar-fill" style="width:18%; background:var(--series-3);"></div></div><div class="bar-value">5,055</div></div>
+      <div class="bar-row"><div class="bar-label">S.O. citation</div><div class="bar-track"><div class="bar-fill" style="width:3%; background:var(--series-4);"></div></div><div class="bar-value">850</div></div>
+      <div class="bar-row"><div class="bar-label">PNQ transfer</div><div class="bar-track"><div class="bar-fill" style="width:1%; background:var(--series-5);"></div></div><div class="bar-value">226</div></div>
+    </div>
+    <p class="discussion" style="font-size:13px;">Rule-based counts (out of 211,567 records). Tags are multi-label — 856 utterances carry 2 tags, 21 carry 3 (e.g. a chair citing a Standing Order while ordering a withdrawal).</p>
+
+    <h3>Rule vs. LSTM: which signal to trust, per tag</h3>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Tag</th><th>Recommendation</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>pnq_transfer</td><td><span class="badge good">Use combined</span></td><td>LSTM caught a real regex gap ("would" as well as "will be replied by") and related deflection language</td></tr>
+        <tr><td>withdrawal_request</td><td><span class="badge good">Use combined</span></td><td>Mostly genuine expansions; some confusion with PNQ-announcement register</td></tr>
+        <tr><td>chair_ruling</td><td><span class="badge warn">Prefer rule</span></td><td>LSTM has no <code>role</code> feature — can't learn "chair must be speaking," flags MPs discussing procedure</td></tr>
+        <tr><td>so_citation</td><td><span class="badge warn">Prefer rule</span></td><td>LSTM extras are mostly "sounds procedural" false positives, not real Standing Order citations</td></tr>
+        <tr><td>interruption</td><td><span class="badge good">Trivial</span></td><td>Exact structural match — perfect agreement by construction</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="discussion">
+      Rather than report one blended accuracy number, the rule/LSTM disagreements were read by hand
+      for every tag. <code>procedural_tags_final.parquet</code> keeps <code>_rule</code>,
+      <code>_lstm</code>, and <code>_combined</code> as separate columns per tag specifically so this
+      variance isn't hidden behind an aggregate F1.
+    </p>
+  </section>
+
+  <!-- LINKING LAYER -->
+  <section id="linking-layer">
+    <h2>Linking Layer</h2>
+    <p class="section-meta"><span class="badge warn">In progress</span> Intervention rate ~ topic × speaker party × chair</p>
+
+    <div class="callout warn">
+      <strong>Why this is taking real work, not a quick regression.</strong> Grounding the model
+      against real data found that only 145 of 211,567 utterances had a resolved
+      <code>party = opposition</code> — and every one came from a single office (Leader of
+      Opposition) — versus 39,396 <code>government</code>. 65,610 backbench MP utterances (both
+      sides) had no party at all. Running H1 (Government vs. Opposition asymmetry) on that data
+      would really be testing "Leader of Opposition vs. Ministers," not a party-level effect.
+    </div>
+
+    <div class="two-col">
+      <div class="status-card">
+        <h4>Done</h4>
+        <ul>
+          <li>Researched &amp; verified real Mauritius National Assembly membership for all 3
+            elections spanning the corpus (2014 / 2019 / 2024 → 6th / 7th / 8th Assembly) — ~198 MP
+            records with party and constituency</li>
+          <li>Verified and encoded a real mid-term coalition change: PMSD left the governing Alliance
+            Lepep on 19&nbsp;Dec&nbsp;2016 — government/opposition status is date-aware, not a static
+            per-term label</li>
+          <li>Found and fixed an upstream Layer 0 gap: generic chair/government titles ("The Deputy
+            Speaker," "The Chairperson," "The Deputy Prime Minister") weren't being role-resolved</li>
+        </ul>
+      </div>
+      <div class="status-card">
+        <h4>Next</h4>
+        <ul>
+          <li>Re-run Layer 0 with the role-resolution fix</li>
+          <li>Resolve backbench-MP party from the registry, scoped by Assembly term and sitting date</li>
+          <li>Extract per-debate presiding-chair identity</li>
+          <li>Build the topic × party × chair panel; fit the mixed-effects model (H1) and a secondary
+            PNQ-deflection analysis (H2)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOME LAYER -->
+  <section id="outcome-layer">
+    <h2>Outcome Layer</h2>
+    <p class="section-meta"><span class="badge warn" style="background:color-mix(in srgb, var(--text-muted) 16%, transparent); color:var(--text-muted);">Not started</span> Topic attention share in t+1 ~ procedural conflict in t</p>
+    <p class="discussion">
+      Time-series / Granger-style test of whether procedural conflict on a topic in one sitting
+      predicts that topic's attention share in the sittings that follow (H3) — the empirical test of
+      the feedback loop in the project's conceptual framework. Depends on the Linking layer's panel.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <a href="https://github.com/CAPE-ERC/Parliamentary-Research" target="_blank" rel="noopener">Repository</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/CAPE-ERC/Parliamentary-Research/tree/topic-layer" target="_blank" rel="noopener">topic-layer</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/CAPE-ERC/Parliamentary-Research/tree/procedural-layer" target="_blank" rel="noopener">procedural-layer</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/CAPE-ERC/Parliamentary-Research/tree/linking-layer" target="_blank" rel="noopener">linking-layer</a>
+    </p>
+    <p>CAPE-ERC Parliamentary Research &nbsp;·&nbsp; Dashboard reflects the latest committed results per layer</p>
+  </div>
+</footer>
+
+</body>
+</html>
