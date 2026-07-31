@@ -14,6 +14,11 @@ data/external/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
+!data/processed/topic_taxonomy.csv
+!data/processed/topic_taxonomy_labeled.xlsx
+!data/processed/corpus_quality_report.md
+!data/processed/classifier_eval_report.md
+!data/processed/two_stage_vs_baseline_report.md
 
 # Models / large artifacts
 *.pt

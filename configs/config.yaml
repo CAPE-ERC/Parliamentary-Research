@@ -3,9 +3,29 @@ corpus:
   raw_dir: data/raw
   processed_dir: data/processed
 
+preprocessing:
+  min_utterance_chars: 3
+  language_id:
+    min_reliable_chars: 20
+    kreol_keywords: [mo, to, li, nou, zot, ou, pou, ena, pa, dan, sa, kot, kouma, kifer, zafer, bizin, gagne, fer, seki, sanla, komie, kitfoi, labous]
+
 topic_layer:
   method: bertopic
-  min_topic_size: 15
+  embedding_model: paraphrase-multilingual-MiniLM-L12-v2
+  min_topic_size: 100
+  nr_topics: null
+  exclude_stage_directions: true
+  min_utterance_chars_for_topics: 10
+  classifier:
+    base_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+    non_policy_cap: 5000
+    num_epochs: 3
+    max_length: 64
+    batch_size: 16
+  two_stage:
+    gate_non_policy_cap: 45000
+    gate_epochs: 2
+    domain_epochs: 3
 
 procedural_layer:
   tags:
