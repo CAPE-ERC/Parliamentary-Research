@@ -60,3 +60,26 @@ Small, human-readable summary docs worth keeping on GitHub for reference
 (e.g. for the Methodology/Results write-up) rather than regenerating
 locally each time: Layer 0 parse/role/language stats, and Stage 2's
 per-class precision/recall/F1 on the held-out validation split.
+
+## Stage 2 v2: two-stage classifier (recommended over the v1 single-stage model)
+
+`processed/two_stage_vs_baseline_report.md` (tracked) documents a fair,
+apples-to-apples comparison between the original single 51-class classifier
+(`src/topic_layer/train_classifier.py`) and a two-stage pipeline
+(`src/topic_layer/train_two_stage.py`: a binary Policy/non_policy gate, then
+a 50-way domain classifier trained only on Policy examples). Both were
+evaluated on the SAME held-out set drawn from the full, naturally-distributed
+corpus (68.9% non_policy - the true prevalence), not the downsampled
+training pool the original 79%/0.78-macro-F1 figure was measured on (which
+was artificially skewed to ~9% non_policy and is not a trustworthy number).
+
+On the fair comparison: single-stage 79.2% accuracy / 0.644 macro F1 vs.
+two-stage **84.7% accuracy / 0.680 macro F1**. The two-stage pipeline wins
+and is the recommended model going forward.
+
+**Use `processed/utterance_policy_labels_two_stage.parquet`** (not
+`utterance_policy_labels.parquet`, the v1 output) for any downstream work -
+same schema (`debate_id, seq_index, predicted_label, predicted_confidence`),
+159,913 rows, every utterance labeled. The v1 file and its model
+(`models/topic_classifier/`) are left in place for reference/comparison but
+superseded.

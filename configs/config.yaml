@@ -22,6 +22,10 @@ topic_layer:
     num_epochs: 3
     max_length: 64
     batch_size: 16
+  two_stage:
+    gate_non_policy_cap: 45000
+    gate_epochs: 2
+    domain_epochs: 3
 
 procedural_layer:
   tags:
