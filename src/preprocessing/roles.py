@@ -16,8 +16,11 @@ from .metadata import DebateMetadata
 
 ROLE_PHRASES = {
     "prime_minister": re.compile(r"^(The\s+)?(Ag\.\s+)?Prime Minister$", re.IGNORECASE),
+    "deputy_prime_minister": re.compile(r"^The (Ag\.\s+)?Deputy Prime Minister$", re.IGNORECASE),
     "leader_of_opposition": re.compile(r"^The Leader of the Opposition", re.IGNORECASE),
     "speaker": re.compile(r"^(Mr|Madam)\s+Speaker$", re.IGNORECASE),
+    "deputy_speaker": re.compile(r"^(The\s+)?(Mr|Madam)?\s*Deputy Speaker$", re.IGNORECASE),
+    "deputy_chairperson_of_committees": re.compile(r"^(The\s+|Madam\s+)?Chairperson$", re.IGNORECASE),
 }
 
 
@@ -41,12 +44,16 @@ def _extract_surname(speaker_raw: str) -> str:
 def resolve_role(speaker_raw: str, metadata: DebateMetadata) -> SpeakerRole:
     stripped = speaker_raw.strip()
 
+    CHAIR_ROLES = {"speaker", "deputy_speaker", "deputy_chairperson_of_committees"}
+    GOVERNMENT_ROLES = {"prime_minister", "deputy_prime_minister"}
     for role_key, pattern in ROLE_PHRASES.items():
         if pattern.match(stripped):
-            party = "government" if role_key == "prime_minister" else None
-            if role_key == "speaker":
+            party = None
+            if role_key in GOVERNMENT_ROLES:
+                party = "government"
+            elif role_key in CHAIR_ROLES:
                 party = "chair"
-            if role_key == "leader_of_opposition":
+            elif role_key == "leader_of_opposition":
                 party = "opposition"
             return SpeakerRole(role_key, party)
 
