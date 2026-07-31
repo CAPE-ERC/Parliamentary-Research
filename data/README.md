@@ -96,3 +96,31 @@ same schema (`debate_id, seq_index, predicted_label, predicted_confidence`),
 159,913 rows, every utterance labeled. The v1 file and its model
 (`models/topic_classifier/`) are left in place for reference/comparison but
 superseded.
+
+## Procedural layer: rule-based tags + LSTM (tracked reports)
+
+`processed/procedural_rules_summary.md`, `processed/procedural_layer_report.md`,
+and `processed/procedural_disagreements_sample.csv` are tracked (same pattern
+as above). Produced by `src/procedural_layer/pipeline.py` (rule-based tagger)
+and `src/procedural_layer/train_lstm.py` (BiLSTM trained on the rule tagger's
+output as silver labels - no human-annotated gold set exists for this layer,
+unlike the Topic layer, since no separate annotator was available).
+
+The final output, `processed/procedural_tags_final.parquet` (not tracked,
+regeneratable), keeps `{tag}_rule`, `{tag}_lstm`, and `{tag}_combined` as
+**separate columns per tag** rather than one blended signal, because manual
+review of the disagreement sample found the LSTM's reliability varies a lot by
+tag:
+
+- `pnq_transfer`, `withdrawal_request`: LSTM adds real value (caught a rule
+  regex gap - "would be replied by" as well as "will" - and related
+  PQ-withdrawal/deflection language) - `_combined` is reasonable to use.
+- `chair_ruling`, `so_citation`: the LSTM has **no access to the `role`
+  field** (text-only input), so it can't learn the rule's "chair must be
+  speaking" constraint and over-flags MPs discussing procedure as if they
+  were the chair ruling on it; `so_citation`'s extra LSTM positives are
+  mostly generic "sounds procedural" false positives, not real Standing Order
+  citations. **Prefer `_rule` over `_combined` for these two tags.**
+
+See `processed/procedural_layer_report.md` for the full per-tag reasoning and
+example disagreements.

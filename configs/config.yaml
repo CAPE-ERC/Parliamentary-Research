@@ -34,6 +34,15 @@ procedural_layer:
     - withdrawal_request
     - so_citation
     - pnq_transfer
+  lstm:
+    embedding_dim: 100
+    hidden_dim: 128
+    max_vocab_size: 20000
+    max_tokens: 50
+    num_epochs: 5
+    batch_size: 256
+    learning_rate: 0.001
+    max_pos_weight: 20.0
 
 linking_layer:
   model: mixed_effects

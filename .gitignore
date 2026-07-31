@@ -19,6 +19,9 @@ data/external/*
 !data/processed/corpus_quality_report.md
 !data/processed/classifier_eval_report.md
 !data/processed/two_stage_vs_baseline_report.md
+!data/processed/procedural_rules_summary.md
+!data/processed/procedural_layer_report.md
+!data/processed/procedural_disagreements_sample.csv
 
 # Models / large artifacts
 *.pt
