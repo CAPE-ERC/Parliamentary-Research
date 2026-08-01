@@ -373,7 +373,7 @@
       <a class="pill" href="#layer0"><span class="dot done"></span>Layer 0 — Preprocessing</a>
       <a class="pill" href="#topic-layer"><span class="dot done"></span>Topic Layer</a>
       <a class="pill" href="#procedural-layer"><span class="dot done"></span>Procedural Layer</a>
-      <a class="pill" href="#linking-layer"><span class="dot progress"></span>Linking Layer</a>
+      <a class="pill" href="#linking-layer"><span class="dot done"></span>Linking Layer</a>
       <a class="pill" href="#outcome-layer"><span class="dot todo"></span>Outcome Layer</a>
     </nav>
   </div>
@@ -391,14 +391,15 @@
       <div class="kpi-tile"><div class="value">199</div><div class="label">topics discovered</div></div>
       <div class="kpi-tile"><div class="value">50</div><div class="label">policy domains labeled</div></div>
       <div class="kpi-tile"><div class="value">5</div><div class="label">procedural tags</div></div>
-      <div class="kpi-tile"><div class="value">3&nbsp;/&nbsp;4</div><div class="label">layers complete</div></div>
+      <div class="kpi-tile"><div class="value">4&nbsp;/&nbsp;5</div><div class="label">layers complete</div></div>
     </div>
     <p class="discussion" style="margin-top:20px;">
       Layer 0 (preprocessing), the Topic layer (two classifier generations, compared head-to-head),
-      and the Procedural layer (rule-based tagging + LSTM) are complete and merged to <code>main</code>.
-      The Linking layer is in progress — a real, researched speaker/party registry is being built to
-      properly power the Government-vs-Opposition test, rather than running the regression on a
-      severely underpowered proxy. The Outcome layer has not started.
+      the Procedural layer (rule-based tagging + LSTM), and the Linking layer (mixed-effects
+      regression) are complete and merged to <code>main</code>. The Linking layer's H1 test needed a
+      real, researched speaker/party registry first — the Government-vs-Opposition comparison would
+      otherwise have run on a severely underpowered proxy — and found a genuine null result once
+      properly powered. The Outcome layer has not started.
     </p>
   </section>
 
@@ -436,11 +437,12 @@
       language ID; it requires a C++ build toolchain unavailable on this machine. <code>langdetect</code>
       plus a Kreol Morisien keyword heuristic was used instead — documented in code, not silently swapped.
     </div>
-    <div class="callout warn">
-      <strong>Role-resolution refinement in progress.</strong> A gap was found where generic role
-      titles — <em>"The Deputy Speaker," "The Deputy Prime Minister," "The Chairperson"</em> — weren't
-      matched by the original role patterns and fell into <code>unclassified_mp</code>. Fixed in
-      <code>src/preprocessing/roles.py</code>; the corpus is being re-processed now.
+    <div class="callout">
+      <strong>Role-resolution gap found and fixed.</strong> Generic role titles —
+      <em>"The Deputy Speaker," "The Deputy Prime Minister," "The Chairperson"</em> — weren't matched
+      by the original role patterns and fell into <code>unclassified_mp</code>. Fixed in
+      <code>src/preprocessing/roles.py</code> and the corpus re-processed: 20,064 utterances moved out
+      of <code>unclassified_mp</code> into their correct chair/government role.
     </div>
   </section>
 
@@ -562,42 +564,58 @@
   <!-- LINKING LAYER -->
   <section id="linking-layer">
     <h2>Linking Layer</h2>
-    <p class="section-meta"><span class="badge warn">In progress</span> Intervention rate ~ topic × speaker party × chair</p>
+    <p class="section-meta">Intervention rate ~ topic × speaker party × chair (MixedLM)</p>
 
-    <div class="callout warn">
-      <strong>Why this is taking real work, not a quick regression.</strong> Grounding the model
-      against real data found that only 145 of 211,567 utterances had a resolved
-      <code>party = opposition</code> — and every one came from a single office (Leader of
-      Opposition) — versus 39,396 <code>government</code>. 65,610 backbench MP utterances (both
-      sides) had no party at all. Running H1 (Government vs. Opposition asymmetry) on that data
-      would really be testing "Leader of Opposition vs. Ministers," not a party-level effect.
+    <div class="callout">
+      <strong>Why this needed a real registry before regressing.</strong> Grounding the model against
+      real data found that only 145 of 211,567 utterances had a resolved <code>party = opposition</code>
+      — and every one came from a single office (Leader of Opposition) — versus 39,396
+      <code>government</code>. Running H1 on that data would really be testing "Leader of Opposition
+      vs. Ministers," not a party-level effect. A real, researched speaker/party registry (~198 MPs
+      across 3 Assembly terms, with a verified time-aware correction for PMSD's Dec&nbsp;2016 defection
+      from government) resolved backbench MPs instead, taking the usable panel from 145 opposition
+      utterances to <strong>13,032</strong>.
     </div>
 
-    <div class="two-col">
-      <div class="status-card">
-        <h4>Done</h4>
-        <ul>
-          <li>Researched &amp; verified real Mauritius National Assembly membership for all 3
-            elections spanning the corpus (2014 / 2019 / 2024 → 6th / 7th / 8th Assembly) — ~198 MP
-            records with party and constituency</li>
-          <li>Verified and encoded a real mid-term coalition change: PMSD left the governing Alliance
-            Lepep on 19&nbsp;Dec&nbsp;2016 — government/opposition status is date-aware, not a static
-            per-term label</li>
-          <li>Found and fixed an upstream Layer 0 gap: generic chair/government titles ("The Deputy
-            Speaker," "The Chairperson," "The Deputy Prime Minister") weren't being role-resolved</li>
-        </ul>
-      </div>
-      <div class="status-card">
-        <h4>Next</h4>
-        <ul>
-          <li>Re-run Layer 0 with the role-resolution fix</li>
-          <li>Resolve backbench-MP party from the registry, scoped by Assembly term and sitting date</li>
-          <li>Extract per-debate presiding-chair identity</li>
-          <li>Build the topic × party × chair panel; fit the mixed-effects model (H1) and a secondary
-            PNQ-deflection analysis (H2)</li>
-        </ul>
-      </div>
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">13,032</div><div class="label">opposition utterances resolved <span style="color:var(--text-muted); font-weight:400;">(was 145)</span></div></div>
+      <div class="kpi-tile"><div class="value">4,735</div><div class="label">panel cells modeled</div></div>
+      <div class="kpi-tile"><div class="value">4</div><div class="label">chairs (random effect)</div></div>
+      <div class="kpi-tile"><div class="value">48</div><div class="label">topics represented</div></div>
     </div>
+
+    <h3>H1 — asymmetric enforcement: a real null result</h3>
+    <p class="discussion">
+      <code>intervention_rate ~ C(topic) × C(party)</code>, random intercept by presiding chair,
+      fit on the properly-powered panel. Only <strong>1 of 47</strong> topic × opposition interaction
+      terms is significant at p&lt;0.05 — at chance level for 47 independent tests (~2.35 expected
+      false positives under the null), and it doesn't survive Bonferroni correction. The one nominally
+      significant term (Vaccination/COVID-19, p=0.044) also points the opposite direction from H1's
+      prediction and isn't a "corruption/procurement/scandal" topic in the first place.
+    </p>
+    <div class="callout">
+      This is a genuine null finding, not a power artifact — the whole point of the registry work was
+      to make sure a null result here would be trustworthy rather than an artifact of the 145-utterance
+      proxy. No broad pattern of topic-conditional asymmetric intervention was found across the corpus.
+    </div>
+
+    <h3>H2 — PNQ deflection: inconclusive, not null</h3>
+    <p class="discussion">
+      <code>pnq_transfer</code> is genuinely rare (226 of 211,567 utterances corpus-wide); broken down
+      by topic, most cells have 0–2 events — not enough signal to say anything either way at this
+      granularity. A coarser grouping (Policy vs. Governance/Procedure, rather than 50 individual
+      topics) is the natural next attempt.
+    </p>
+
+    <h3>What else came out of grounding this</h3>
+    <ul style="color:var(--text-secondary); font-size:14px; max-width:78ch;">
+      <li>Fixed a Layer 0 role-resolution gap (Deputy Speaker / Deputy PM / Chairperson titles) —
+        20,064 utterances moved out of <code>unclassified_mp</code></li>
+      <li>Found and fixed inconsistent chair-surname extraction across 11 years of PDF layouts —
+        normalized to 4 distinct officeholders (Hanoomanjee, Phokeer, Aumeeruddy-Cziffra, Duval)</li>
+      <li>Surname collisions within the same Assembly term (e.g. Adrien Duval and Xavier-Luc Duval
+        both sitting in the 6th Assembly) are left unresolved rather than guessed</li>
+    </ul>
   </section>
 
   <!-- OUTCOME LAYER -->
