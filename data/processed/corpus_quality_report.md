@@ -6,14 +6,15 @@
 
 ## Role resolution (dialogue utterances)
 
-- unclassified_mp: 65610 (39.5%)
+- unclassified_mp: 45546 (27.4%)
 - None (unresolved): 30715 (18.5%)
 - speaker: 30086 (18.1%)
 - minister: 29370 (17.7%)
 - prime_minister: 10026 (6.0%)
-- deputy_chairperson_of_committees: 202 (0.1%)
+- deputy_chairperson_of_committees: 9413 (5.7%)
+- deputy_speaker: 8469 (5.1%)
+- deputy_prime_minister: 2385 (1.4%)
 - leader_of_opposition: 145 (0.1%)
-- deputy_speaker: 1 (0.0%)
 
 ## Language distribution (dialogue utterances)
 

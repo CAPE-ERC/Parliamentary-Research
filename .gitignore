@@ -14,6 +14,9 @@ data/external/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
+!data/external/speaker_registry_TEMPLATE.csv
+!data/external/speaker_registry.csv
+!data/external/party_alignment.csv
 !data/processed/topic_taxonomy.csv
 !data/processed/topic_taxonomy_labeled.xlsx
 !data/processed/corpus_quality_report.md
@@ -22,6 +25,8 @@ data/external/*
 !data/processed/procedural_rules_summary.md
 !data/processed/procedural_layer_report.md
 !data/processed/procedural_disagreements_sample.csv
+!data/processed/party_resolution_report.md
+!data/processed/linking_layer_report.md
 
 # Models / large artifacts
 *.pt

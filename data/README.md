@@ -27,16 +27,30 @@ repo; add a short provenance note here when real data is added.
 - Not committed to git — see root `.gitignore`. Re-sync by mirroring
   `Hansard_Data` from Drive into `raw/<year>/` again if this folder is empty.
 
-## Known gap: speaker/party registry
+## Tracked exceptions: `external/speaker_registry.csv`, `external/party_alignment.csv`
 
-`external/speaker_registry_TEMPLATE.csv` is an empty template
-(`assembly_term, surname_key, full_name, party, constituency, start_date,
-end_date`). Government ministers and chair officers can be derived per-debate
-from each PDF's own Cabinet/Officers front matter (see
-`src/preprocessing/roles.py`), but backbench MPs have no party info anywhere
-in the Hansard PDFs themselves. Populating this registry (Mauritius National
-Assembly membership by term - 2014/2019/2024 elections span the corpus) is a
-follow-up data-sourcing task, not yet done.
+Government ministers and chair officers are derivable per-debate from each
+PDF's own Cabinet/Officers front matter (see `src/preprocessing/roles.py`),
+but backbench MPs have no party info anywhere in the Hansard PDFs themselves.
+`speaker_registry.csv` closes this gap with real, researched data: ~198 MP
+records (name, party, constituency) for all three elections spanning the
+corpus (2014/2019/2024 -> 6th/7th/8th Assembly), sourced from Wikipedia's
+constituency-by-constituency results and cross-checked against the official
+National Assembly site. `party_alignment.csv` separates "which party is this
+MP in" (stable) from "was that party in government on date D" (time-varying)
+- critically, PMSD left the governing Alliance Lepep coalition on
+19 Dec 2016 (verified via web search), so government/opposition status is
+date-aware per party per term, not a static per-term label. Some rows
+(Rodrigues's RPO, the 8th Assembly's smaller opposition parties) are marked
+`confidence: low` where the formal coalition alignment wasn't confirmed.
+
+Matching (`src/linking_layer/party_resolution.py`) is surname-based, scoped
+to the debate's Assembly term. Surname collisions where multiple registered
+MPs share a surname *within the same term* (e.g. Adrien Duval and Xavier-Luc
+Duval both sat in the 6th Assembly) are left unresolved rather than guessed -
+see `processed/party_resolution_report.md` for the resolution rate and
+collision list. `speaker_registry_TEMPLATE.csv` (the empty schema) is kept
+for reference.
 
 ## Tracked exception: `processed/topic_taxonomy.csv`
 
@@ -124,3 +138,26 @@ tag:
 
 See `processed/procedural_layer_report.md` for the full per-tag reasoning and
 example disagreements.
+
+## Linking layer: mixed-effects regression (tracked report)
+
+`processed/linking_layer_report.md` (tracked) documents the H1/H2 analysis.
+Panel construction (`src/linking_layer/build_panel.py`): intervention rate
+per (debate x topic x party) cell, where "intervened" means a chair_ruling
+or interruption (rule-tagger `_rule` columns) occurs within the next 3
+utterances after a substantive MP utterance. Chair identity
+(`src/linking_layer/chair_identity.py`) is the debate's presiding Speaker
+surname, re-parsed from front matter and normalized to 4 distinct
+officeholders across the corpus. Model: `statsmodels` `MixedLM`,
+`intervention_rate ~ C(topic) * C(party)`, random intercept by chair.
+
+**Headline finding: H1 (asymmetric enforcement) is a real null result, not
+an underpowered one.** With the registry-resolved panel (13,032
+opposition-attributed utterances across 4 chairs and 48 topics - a very
+different sample than the 145-utterance, single-office proxy this would
+have run on before the registry work), only 1 of 47 topic x opposition
+interaction terms is significant at p<0.05 - at chance level for 47 tests,
+and it doesn't survive Bonferroni correction. H2 (PNQ deflection by topic)
+is inconclusive rather than null: `pnq_transfer` is rare enough (226 of
+211,567 utterances) that most topic-level cells have 0-2 events - not
+enough signal to say anything either way at this granularity.

@@ -1,0 +1,25 @@
+party,assembly_term,gov_or_opp,effective_from,effective_to,confidence,note
+MSM,6th,government,2014-12-10,2019-11-07,high,Alliance Lepep - core party throughout
+PMSD,6th,government,2014-12-10,2016-12-19,high,Left Alliance Lepep 2016-12-19 (verified via web search)
+PMSD,6th,opposition,2016-12-19,2019-11-07,high,Xavier-Luc Duval became Leader of Opposition Jan 2017
+ML,6th,government,2014-12-10,2019-11-07,high,Alliance Lepep - Muvman Liberater
+Labour,6th,opposition,2014-12-10,2019-11-07,high,Outgoing PTR-MMM coalition
+MMM,6th,opposition,2014-12-10,2019-11-07,high,Outgoing PTR-MMM coalition
+RPO,6th,opposition,2014-12-10,2019-11-07,low,Rodrigues regional party - not confirmed as formal coalition member; treated as opposition by default
+MSM,7th,government,2019-11-07,2024-11-10,high,Alliance Morisien
+ML,7th,government,2019-11-07,2024-11-10,high,Alliance Morisien - Muvman Liberater
+MAG,7th,government,2019-11-07,2024-11-10,high,Alliance Morisien - Mouvement Alan Ganoo
+PM,7th,government,2019-11-07,2024-11-10,high,Alliance Morisien - Plateforme Militante
+Labour,7th,opposition,2019-11-07,2024-11-10,high,Alliance Nationale
+PMSD,7th,opposition,2019-11-07,2024-11-10,high,Alliance Nationale (PMSD out of government since Dec 2016)
+MMM,7th,opposition,2019-11-07,2024-11-10,high,Independent opposition bloc
+RPO,7th,opposition,2019-11-07,2024-11-10,low,Rodrigues regional party - not confirmed as formal coalition member; treated as opposition by default
+Labour,8th,government,2024-11-10,,high,Alliance du Changement - landslide win
+MMM,8th,government,2024-11-10,,high,Alliance du Changement
+ND,8th,government,2024-11-10,,high,Alliance du Changement - New Democrats
+ReA,8th,government,2024-11-10,,high,Alliance du Changement - Rezistans ek Alternativ
+MSM,8th,opposition,2024-11-10,,high,Lost landslide - reduced to opposition
+PMSD,8th,opposition,2024-11-10,,medium,Not part of winning alliance
+ML,8th,opposition,2024-11-10,,medium,Not part of winning alliance
+RPO,8th,opposition,2024-11-10,,low,Rodrigues regional party - not confirmed as formal coalition member; treated as opposition by default
+Alliance Liberation,8th,opposition,2024-11-10,,low,Rodrigues best-loser party - alignment not confirmed; treated as opposition by default
