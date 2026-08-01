@@ -97,7 +97,7 @@ def test_resolve_pq_party_matches_and_flags_collision():
     assert matched["match_method"] == "matched_2word"
 
     collided = resolved[resolved["pq_num"] == "2"].iloc[0]
-    assert collided["resolved_party"] is None
+    assert pd.isna(collided["resolved_party"])
     assert collided["match_method"] == "ambiguous_collision"
 
 
