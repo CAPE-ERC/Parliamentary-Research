@@ -54,7 +54,7 @@ def extract_candidate_surnames(speaker_raw: str) -> list[str]:
 
 
 def parse_sitting_date(sitting_date: str | None) -> pd.Timestamp | None:
-    if not sitting_date:
+    if pd.isna(sitting_date) or not sitting_date:
         return None
     m = MONTH_RE.search(sitting_date)
     if not m:
