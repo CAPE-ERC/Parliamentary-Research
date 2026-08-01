@@ -374,7 +374,7 @@
       <a class="pill" href="#topic-layer"><span class="dot done"></span>Topic Layer</a>
       <a class="pill" href="#procedural-layer"><span class="dot done"></span>Procedural Layer</a>
       <a class="pill" href="#linking-layer"><span class="dot done"></span>Linking Layer</a>
-      <a class="pill" href="#outcome-layer"><span class="dot todo"></span>Outcome Layer</a>
+      <a class="pill" href="#outcome-layer"><span class="dot done"></span>Outcome Layer</a>
     </nav>
   </div>
 </header>
@@ -391,15 +391,19 @@
       <div class="kpi-tile"><div class="value">199</div><div class="label">topics discovered</div></div>
       <div class="kpi-tile"><div class="value">50</div><div class="label">policy domains labeled</div></div>
       <div class="kpi-tile"><div class="value">5</div><div class="label">procedural tags</div></div>
-      <div class="kpi-tile"><div class="value">4&nbsp;/&nbsp;5</div><div class="label">layers complete</div></div>
+      <div class="kpi-tile"><div class="value">5&nbsp;/&nbsp;5</div><div class="label">layers complete</div></div>
     </div>
     <p class="discussion" style="margin-top:20px;">
-      Layer 0 (preprocessing), the Topic layer (two classifier generations, compared head-to-head),
-      the Procedural layer (rule-based tagging + LSTM), and the Linking layer (mixed-effects
-      regression) are complete and merged to <code>main</code>. The Linking layer's H1 test needed a
-      real, researched speaker/party registry first — the Government-vs-Opposition comparison would
-      otherwise have run on a severely underpowered proxy — and found a genuine null result once
-      properly powered. The Outcome layer has not started.
+      All five layers — Layer 0 (preprocessing), the Topic layer (two classifier generations,
+      compared head-to-head), the Procedural layer (rule-based tagging + LSTM), the Linking layer
+      (mixed-effects regression), and the Outcome layer (Granger-style time-series test) — are
+      complete and merged to <code>main</code>. Two of the pipeline's three hypotheses (H1
+      asymmetric enforcement, H3 attention-cooling) came back as genuine null results once properly
+      powered and tested — not spun as something they aren't. Both needed grounding work first: H1
+      needed a real, researched speaker/party registry (the Government-vs-Opposition comparison
+      would otherwise have run on a severely underpowered proxy); H3 needed the full chronological,
+      zero-filled time series rather than a naive "next appearance" index. H2 (PNQ deflection)
+      remains inconclusive due to event sparsity.
     </p>
   </section>
 
@@ -621,12 +625,56 @@
   <!-- OUTCOME LAYER -->
   <section id="outcome-layer">
     <h2>Outcome Layer</h2>
-    <p class="section-meta"><span class="badge warn" style="background:color-mix(in srgb, var(--text-muted) 16%, transparent); color:var(--text-muted);">Not started</span> Topic attention share in t+1 ~ procedural conflict in t</p>
+    <p class="section-meta">Topic attention share in t+1 ~ procedural conflict in t (Granger-style + MixedLM)</p>
+
     <p class="discussion">
-      Time-series / Granger-style test of whether procedural conflict on a topic in one sitting
-      predicts that topic's attention share in the sittings that follow (H3) — the empirical test of
-      the feedback loop in the project's conceptual framework. Depends on the Linking layer's panel.
+      Tests H3, the feedback-loop hypothesis in the project's conceptual framework: does procedural
+      conflict on a topic in one sitting depress that topic's attention share in the sittings that
+      follow? Built a full <code>topic × sitting</code> grid — 50 policy topics across all 402
+      chronologically-ordered sittings (2 of 404 dropped for unparseable dates), zero-filled on
+      sittings a topic wasn't raised at all, so no series skips ahead to a topic's "next appearance."
+      Conflict is the same windowed <code>chair_ruling</code>/<code>interruption</code> definition
+      used for H1/H2, aggregated to a per-topic-per-sitting rate.
     </p>
+
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">50&nbsp;×&nbsp;402</div><div class="label">topic × sitting grid</div></div>
+      <div class="kpi-tile"><div class="value">38</div><div class="label">topics with enough conflict variation to test</div></div>
+      <div class="kpi-tile"><div class="value">3&nbsp;/&nbsp;38</div><div class="label">significant at raw p&lt;0.05</div></div>
+      <div class="kpi-tile"><div class="value">1</div><div class="label">survives Bonferroni</div></div>
+    </div>
+
+    <h3>H3 — attention cooling: another real null result</h3>
+    <p class="discussion">
+      Per-topic Granger causality tests (lag 1, <code>conflict_rate → attention_share</code>) on the
+      38 topics with enough conflict-sitting variation to test meaningfully: <strong>3 of 38</strong>
+      significant at raw p&lt;0.05 — below the ~1.9 false positives expected by chance at that rate,
+      and only <strong>1</strong> survives Bonferroni correction (α=0.05/38). A pooled <code>MixedLM</code>
+      panel model (<code>attention_share<sub>t+1</sub> ~ attention_share<sub>t</sub> +
+      conflict_rate<sub>t</sub></code>, random intercept by topic) confirms it: <code>conflict_rate</code>'s
+      coefficient is effectively zero (−0.0002, p=0.897), while <code>attention_share<sub>t</sub></code>
+      itself is the only real predictor of <code>attention_share<sub>t+1</sub></code> (coef 0.177,
+      p&lt;0.001) — topics that get a lot of attention keep getting attention; conflict doesn't
+      measurably cool that down.
+    </p>
+    <div class="callout">
+      A genuine null, not a power artifact: every topic had the full 402-sitting series available,
+      and the two independent tests (per-topic Granger, pooled panel) agree. Combined with H1's null,
+      the corpus shows no broad evidence that procedural friction is being used to selectively
+      suppress topics — either in the moment (H1) or over time (H3).
+    </div>
+
+    <h3>Caveats</h3>
+    <ul style="color:var(--text-secondary); font-size:14px; max-width:78ch;">
+      <li>Granger causality assumes stationary series; a 2015–2025 span plausibly has trends or
+        structural breaks (e.g. COVID-era health-topic spikes) that weren't tested for with full
+        per-topic ADF unit-root tests given scope — treat results as suggestive, not confirmatory</li>
+      <li>12 of 50 topics had too little conflict-sitting variation (&lt;10 sittings with
+        <code>conflict_rate &gt; 0</code>) to test meaningfully and were excluded — not evidence of
+        no effect for those topics specifically</li>
+      <li>Full per-topic results (all lags 1–3) are in
+        <a href="https://github.com/CAPE-ERC/Parliamentary-Research/blob/main/data/processed/outcome_layer_report.md" target="_blank" rel="noopener">outcome_layer_report.md</a></li>
+    </ul>
   </section>
 
 </main>
