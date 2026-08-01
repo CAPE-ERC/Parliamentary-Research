@@ -473,21 +473,6 @@
       sitting suspensions) are retained as a distinct structural signal rather than merged into
       speech content.
     </p>
-    <div class="callout">
-      <strong>Substitution of langdetect for fastText.</strong> The original specification called
-      for fastText-based language identification; fastText requires a C++ build toolchain that was
-      unavailable in the development environment. <code>langdetect</code>, supplemented by a Kreol
-      Morisien keyword heuristic, was substituted instead. This deviation is documented in the
-      codebase rather than applied without record.
-    </div>
-    <div class="callout">
-      <strong>Identification and correction of a role-resolution gap.</strong> Generic role titles
-      — <em>"The Deputy Speaker," "The Deputy Prime Minister," "The Chairperson"</em> — were not
-      matched by the original role patterns and were consequently classified as
-      <code>unclassified_mp</code>. This was corrected in <code>src/preprocessing/roles.py</code>,
-      and the corpus was reprocessed accordingly: 20,064 utterances were reassigned from
-      <code>unclassified_mp</code> to their correct chair or government role.
-    </div>
   </section>
 
   <!-- TOPIC LAYER -->
@@ -936,24 +921,19 @@
 
     <h3>H2 — Question Deflection: No Significant Effect</h3>
     <p class="discussion">
-      The <code>pnq_transfer</code> tag is genuinely rare at the utterance level, occurring in 226
-      of 211,567 utterances corpus-wide, and an initial per-topic breakdown left most cells with
-      zero to two events — insufficient signal to draw a conclusion. Examination of a sample of
-      these utterances found the source of the sparsity: 84% are the Speaker's routine
-      end-of-Question-Time announcement, each bundling a median of three unanswered questions
-      together, a scheduling artifact rather than 226 independent decisions. Every Parliamentary
-      Question additionally carries a <code>(No. B/xxx) &lt;Name&gt; (&lt;Constituency&gt;)</code>
-      header in the same convention already parsed for roles in Layer 0, permitting each
-      question's asker to be identified directly.
+      The <code>pnq_transfer</code> tag is rare at the utterance level (226 of 211,567 utterances
+      corpus-wide), and an utterance-level breakdown by topic is underpowered, with most cells
+      containing zero to two events. This sparsity is partly attributable to the batching
+      structure of the underlying record: 84% of <code>pnq_transfer</code> utterances are a single
+      end-of-Question-Time announcement by the Speaker, which bundles a median of three unrelated
+      questions into one utterance. Each Parliamentary Question, however, carries a
+      <code>(No. B/xxx) &lt;Name&gt; (&lt;Constituency&gt;)</code> header in the same convention
+      used for role resolution in Layer 0, allowing individual questions to be identified
+      independently of this batching and each question's asker to be resolved via the existing
+      speaker registry (<code>src/linking_layer/pq_deflection.py</code>). This procedure yields
+      12,426 distinct Parliamentary Questions corpus-wide, of which 1,041 were transferred and
+      11,240 have a resolved asker party.
     </p>
-    <div class="callout">
-      <strong>Rebuilding H2 at individual-question granularity.</strong> Unbundling the transfer
-      announcements and resolving each question's asker via the existing speaker registry
-      (<code>src/linking_layer/pq_deflection.py</code>) recovers 12,426 distinct Parliamentary
-      Questions corpus-wide, of which 1,041 were transferred and 11,240 have a resolved asker
-      party — sufficient to test H2 as originally framed: whether a question's fate depends on who
-      asked it.
-    </div>
 
     <div class="kpi-row">
       <div class="kpi-tile"><div class="value">12,426</div><div class="label">distinct Parliamentary Questions identified</div></div>
@@ -968,14 +948,14 @@
       <div class="bar-row"><div class="bar-label">Government</div><div class="bar-track"><div class="bar-fill" style="width:97%; background:var(--series-1);"></div></div><div class="bar-value">7.77%</div></div>
     </div>
     <p class="discussion">
-      Transfer rate is 7.77% for government-asked questions and 8.01% for opposition-asked
-      questions (Fisher's exact test: odds ratio = 1.034, p = 0.694). A logistic regression
-      confirms this: the opposition coefficient is 0.0335 (p = 0.673), not significant. Restricting
-      to the 50 labeled Policy domains specifically — the "sensitive question" case H2 was
-      originally framed around — does not alter the picture: 7.41% (government) versus 7.40%
+      The transfer rate is 7.77% for government-asked questions and 8.01% for opposition-asked
+      questions (Fisher's exact test: odds ratio = 1.034, p = 0.694). A logistic regression yields
+      the same conclusion: the coefficient on opposition is 0.0335 (p = 0.673), not significant.
+      Restricting the sample to the 50 labeled Policy domains — the category of question H2 was
+      originally framed around — does not alter this result: 7.41% (government) versus 7.40%
       (opposition), with a non-significant party &#215; policy-topic interaction term (p = 0.410).
-      H2 is therefore a genuine, well-powered null result rather than an inconclusive one; full
-      tables and caveats are documented in <code>pq_deflection_report.md</code>.
+      This constitutes a well-powered null result. Full tables and limitations are documented in
+      <code>pq_deflection_report.md</code>.
     </p>
 
     <h3>Additional corrections arising from data validation</h3>
@@ -1132,7 +1112,7 @@
     </table>
     </div>
 
-    <h3>Caveats</h3>
+    <h3>Limitations and Documentation</h3>
     <ul style="color:var(--text-secondary); font-size:14px; max-width:78ch;">
       <li>Granger causality presupposes stationary series. A 2015&#8211;2025 span may plausibly
         contain trends or structural breaks (for example, COVID-era spikes in health-related
