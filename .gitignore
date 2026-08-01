@@ -28,6 +28,7 @@ data/external/*
 !data/processed/party_resolution_report.md
 !data/processed/linking_layer_report.md
 !data/processed/outcome_layer_report.md
+!data/processed/pq_deflection_report.md
 
 # Models / large artifacts
 *.pt

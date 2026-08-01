@@ -28,7 +28,7 @@ Section 5.3 methodology below), and still finds no broad pattern of
 topic-conditional asymmetric intervention. That is itself a meaningful,
 reportable finding for the study, not a methodology failure.
 
-## H2: PNQ deflection - inconclusive due to event sparsity, not a null result
+## H2: PNQ deflection - initial assessment (utterance-level, inconclusive)
 
 pnq_transfer is a genuinely rare event (226 of 211,567 utterances corpus-
 wide). Broken down by topic, most cells have 0-2 transfer events (see table
@@ -37,6 +37,38 @@ sensitive topics see disproportionate deflection. Unlike H1, this is not a
 confident null - it's "not enough events to tell," and would need either a
 coarser grouping (e.g. Policy vs. Governance/Procedure rather than 50
 individual topics) or a larger corpus to test properly.
+
+## H2 reassessed: a real null result at individual-PQ granularity
+
+Reading a sample of the 226 pnq_transfer utterances found the source of the
+sparsity: 84% are the Speaker's routine end-of-Question-Time announcement
+("Time over! ... PQ B/757 will be replied by ..."), and each one bundles a
+median of 3 straggler PQ numbers together - a scheduling artifact, not 226
+independent deflection decisions. Every Parliamentary Question also carries
+a `(No. B/xxx) <Name> (<Constituency>)` header in the same convention Layer
+0 already parses for roles, so each PQ's asker can be identified directly.
+
+Unbundling the transfer announcements and resolving each PQ's asker
+(`src/linking_layer/pq_deflection.py`) recovers **12,426** distinct PQs
+asked corpus-wide, of which 1,041 were transferred and 11,240 have a
+resolved asker party. Tested properly on this population
+(`src/linking_layer/pq_deflection_test.py`):
+
+- Transfer rate is **7.77%** for government-asked PQs vs. **8.01%** for
+  opposition-asked PQs. Fisher's exact test: odds ratio = 1.034, p = 0.694.
+- Logistic regression confirms this: the opposition coefficient is 0.0335
+  (p = 0.673) - not significant.
+- Restricting to the 50 labeled Policy domains specifically (the "sensitive
+  question" case H2 was originally framed around) does not change the
+  picture: 7.41% (government) vs. 7.40% (opposition), and the party x
+  policy-topic interaction term is not significant (p = 0.410).
+
+**This supersedes the utterance-level result above.** H2 is now a real,
+well-powered null result, not an inconclusive one - the deflection
+mechanism this corpus captures shows no measurable dependence on who asked
+the question, overall or specifically for policy topics. Full tables and
+caveats (asker-resolution coverage, the Ministers-rarely-ask-PQs
+composition of the sample) are in `pq_deflection_report.md`.
 
 ## H1: topic x party interaction terms (asymmetric enforcement)
 
