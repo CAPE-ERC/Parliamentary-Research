@@ -429,14 +429,16 @@
       classifier generations, evaluated comparatively), the Procedural layer (rule-based tagging
       combined with an LSTM sequence classifier), the Linking layer (mixed-effects regression), and
       the Outcome layer (a Granger-style time-series analysis) — are complete and merged to
-      <code>main</code>. Two of the three hypotheses under investigation (H1, asymmetric procedural
-      enforcement; H3, attention cooling following procedural conflict) returned genuine null
-      results once adequately powered and formally tested. Both required preparatory work before
-      testing could proceed: H1 required construction of a verified speaker/party registry, absent
-      which the government-versus-opposition comparison would have relied on a severely
-      underpowered proxy; H3 required a complete, chronologically ordered and zero-filled time
-      series rather than an index restricted to a topic's subsequent appearances. H2 (question
-      deflection) remains inconclusive owing to the low frequency of the relevant events.
+      <code>main</code>. All three hypotheses under investigation returned genuine null results
+      once adequately powered and formally tested, each requiring substantial preparatory work
+      before testing could proceed. H1 (asymmetric procedural enforcement) required construction
+      of a verified speaker/party registry, absent which the government-versus-opposition
+      comparison would have relied on a severely underpowered proxy. H3 (attention cooling
+      following procedural conflict) required a complete, chronologically ordered and zero-filled
+      time series rather than an index restricted to a topic's subsequent appearances. H2
+      (question deflection) required unbundling a routine Speaker announcement into individually
+      identified Parliamentary Questions and resolving each question's asker, which recovered
+      12,426 testable questions from an initially sparse 226-utterance signal.
     </p>
   </section>
 
@@ -932,13 +934,48 @@
       identified across the corpus.
     </div>
 
-    <h3>H2 — Question Deflection: Inconclusive</h3>
+    <h3>H2 — Question Deflection: No Significant Effect</h3>
     <p class="discussion">
-      The <code>pnq_transfer</code> event is genuinely rare, occurring in 226 of 211,567 utterances
-      corpus-wide. When disaggregated by topic, most cells contain zero to two events, providing
-      insufficient signal to draw a conclusion in either direction at this level of granularity. A
-      coarser grouping — Policy versus Governance/Procedure, rather than 50 individual topics —
-      represents a natural next step for this analysis.
+      The <code>pnq_transfer</code> tag is genuinely rare at the utterance level, occurring in 226
+      of 211,567 utterances corpus-wide, and an initial per-topic breakdown left most cells with
+      zero to two events — insufficient signal to draw a conclusion. Examination of a sample of
+      these utterances found the source of the sparsity: 84% are the Speaker's routine
+      end-of-Question-Time announcement, each bundling a median of three unanswered questions
+      together, a scheduling artifact rather than 226 independent decisions. Every Parliamentary
+      Question additionally carries a <code>(No. B/xxx) &lt;Name&gt; (&lt;Constituency&gt;)</code>
+      header in the same convention already parsed for roles in Layer 0, permitting each
+      question's asker to be identified directly.
+    </p>
+    <div class="callout">
+      <strong>Rebuilding H2 at individual-question granularity.</strong> Unbundling the transfer
+      announcements and resolving each question's asker via the existing speaker registry
+      (<code>src/linking_layer/pq_deflection.py</code>) recovers 12,426 distinct Parliamentary
+      Questions corpus-wide, of which 1,041 were transferred and 11,240 have a resolved asker
+      party — sufficient to test H2 as originally framed: whether a question's fate depends on who
+      asked it.
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-tile"><div class="value">12,426</div><div class="label">distinct Parliamentary Questions identified</div></div>
+      <div class="kpi-tile"><div class="value">1,041</div><div class="label">transferred (unbundled)</div></div>
+      <div class="kpi-tile"><div class="value">90.5%</div><div class="label">askers resolved to a party</div></div>
+      <div class="kpi-tile"><div class="value">0.694</div><div class="label">Fisher's exact p-value</div></div>
+    </div>
+
+    <h4 style="font-size:14px; margin:20px 0 8px; color:var(--text-primary);">Transfer rate by asker party</h4>
+    <div class="barchart" role="img" aria-label="Transfer rate by asker party">
+      <div class="bar-row"><div class="bar-label">Opposition</div><div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--series-2);"></div></div><div class="bar-value">8.01%</div></div>
+      <div class="bar-row"><div class="bar-label">Government</div><div class="bar-track"><div class="bar-fill" style="width:97%; background:var(--series-1);"></div></div><div class="bar-value">7.77%</div></div>
+    </div>
+    <p class="discussion">
+      Transfer rate is 7.77% for government-asked questions and 8.01% for opposition-asked
+      questions (Fisher's exact test: odds ratio = 1.034, p = 0.694). A logistic regression
+      confirms this: the opposition coefficient is 0.0335 (p = 0.673), not significant. Restricting
+      to the 50 labeled Policy domains specifically — the "sensitive question" case H2 was
+      originally framed around — does not alter the picture: 7.41% (government) versus 7.40%
+      (opposition), with a non-significant party &#215; policy-topic interaction term (p = 0.410).
+      H2 is therefore a genuine, well-powered null result rather than an inconclusive one; full
+      tables and caveats are documented in <code>pq_deflection_report.md</code>.
     </p>
 
     <h3>Additional corrections arising from data validation</h3>
@@ -1159,9 +1196,11 @@
           <td class="strong">H2 — Question deflection</td>
           <td>Whether questions on sensitive subjects are deferred to a later sitting more
             frequently than questions on routine subjects.</td>
-          <td><span class="badge warn">Inconclusive</span> Such deferrals occur — 226 instances
-            across eleven years — but too infrequently, and too dispersed across topics, to
-            determine whether the pattern is targeted or incidental.</td>
+          <td><span class="badge good">No significant effect</span> Of 11,240 individually
+            identified questions with a known asker, the transfer rate for opposition-asked
+            questions (8.01%) does not differ significantly from that for government-asked
+            questions (7.77%), including when restricted to sensitive policy subjects
+            specifically.</td>
         </tr>
         <tr>
           <td class="strong">H3 — Attention cooling</td>
@@ -1178,31 +1217,35 @@
     </div>
 
     <p class="discussion">
-      Two null findings might, on a superficial reading, be interpreted as an absence of results.
-      Such an interpretation would understate their significance. The analytic pipeline was
-      designed specifically to detect a subtle and structural form of bias, incorporating
+      Three null findings might, on a superficial reading, be interpreted as an absence of
+      results. Such an interpretation would understate their significance. The analytic pipeline
+      was designed specifically to detect a subtle and structural form of bias, incorporating
       statistical safeguards — including Bonferroni correction applied across each set of
       per-topic tests — to prevent isolated, chance-level findings from being mistaken for a
-      systematic pattern. Having applied this design, the analysis finds no broad evidence that
+      systematic pattern, and, in the case of H2, unbundling a sparse utterance-level signal into
+      an individually identified, adequately powered population before concluding that no effect
+      was present. Having applied this design, the analysis finds no broad evidence that
       procedural authority is being exercised to selectively suppress particular voices or
-      subjects, whether within individual sittings or across time. This constitutes a substantive
-      empirical finding regarding institutional function along the two dimensions examined.
+      subjects, whether within individual sittings, across time, or in the handling of individual
+      questions. This constitutes a substantive empirical finding regarding institutional function
+      along the three dimensions examined.
     </p>
     <p class="discussion">
       These findings should not be interpreted as a comprehensive assessment of procedural
-      fairness within the institution. The question of deflection remains open rather than
-      resolved. Furthermore, the analysis is limited to a single legislature over an eleven-year
-      period and should not be generalized beyond that context without further study. The validity
-      of a null result depends directly on the quality of the underlying data; for this reason,
-      construction of the speaker registry, correction of role-resolution errors, and
-      standardization of chair identification were completed prior to hypothesis testing, rather
-      than in response to preliminary results.
+      fairness within the institution. The analysis is limited to a single legislature over an
+      eleven-year period and should not be generalized beyond that context without further study,
+      and each test examines a specific, narrowly defined mechanism rather than procedural power
+      in general. The validity of a null result depends directly on the quality of the underlying
+      data; for this reason, construction of the speaker registry, correction of role-resolution
+      errors, standardization of chair identification, and resolution of individual question
+      askers were each completed prior to hypothesis testing, rather than in response to
+      preliminary results.
     </p>
     <div class="callout">
       <strong>Summary of findings.</strong> The analysis finds no broad evidence of asymmetric
-      procedural enforcement (H1) or of attention suppression following procedural conflict (H3).
-      The question of deflection (H2) remains unresolved owing to the low frequency of the relevant
-      events in the data, rather than having been tested and found absent.
+      procedural enforcement (H1), targeted deflection of questions by the asker's party (H2), or
+      attention suppression following procedural conflict (H3), across three independently
+      constructed and adequately powered tests.
     </div>
   </section>
 
