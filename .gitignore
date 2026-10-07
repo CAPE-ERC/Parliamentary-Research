@@ -12,6 +12,7 @@ data/raw/*
 data/processed/*
 data/external/*
 data/validation/*
+!data/validation/annotation_workbook.xlsx
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
