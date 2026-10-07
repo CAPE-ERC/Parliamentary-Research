@@ -16,21 +16,23 @@ population, rather than a sparse per-topic breakdown.
 ## Data
 
 - Distinct PQs identified corpus-wide: 12426
-- Transfer references found: 1076 (1041 matched to a known header)
+- Transfer references found: 433 (418 matched to a known header)
 - PQs with a resolved asker party: 11240 (90.5%)
 - PQs excluded (no match or surname collision): 1186 (9.5%)
-- Transferred PQs among resolved: 893 (7.9%)
+- Transferred PQs among resolved: 363 (3.2%)
 
-## Headline: no evidence of party-conditional deflection
+## Unadjusted party comparison
 
-Transfer rate is **7.77%** for government-asked PQs and **8.01%** for opposition-asked PQs. Fisher's exact test: odds ratio=1.034, p=0.694. Logistic regression confirms this: the opposition coefficient is 0.0335 (p=0.673), not significant.
+Transfer rate is **2.37%** for government-asked PQs and **3.54%** for opposition-asked PQs. Fisher's exact test: odds ratio=1.516, p=0.002. Logistic regression: the opposition coefficient is 0.4158 (p=0.002).
+
+These tests treat PQs as independent, include withdrawn PQs in the denominator and have no controls. The adjusted, clustered analysis that the paper reports is in `h2_reanalysis_report.md`.
 
 ### Contingency table
 
 | Party | Not transferred | Transferred | Transfer rate |
 |---|---|---|---|
-| government | 2767 | 233 | 7.77% |
-| opposition | 7580 | 660 | 8.01% |
+| government | 2929 | 71 | 2.37% |
+| opposition | 7948 | 292 | 3.54% |
 
 ### Robustness check: interaction with Policy-topic status
 
@@ -38,12 +40,12 @@ H2 was originally framed around sensitive *policy* questions specifically, not p
 
 | Party | Policy topic | N | Transferred | Rate |
 |---|---|---|---|---|
-| government | False | 1096 | 92 | 8.39% |
-| government | True | 1904 | 141 | 7.41% |
-| opposition | False | 2426 | 230 | 9.48% |
-| opposition | True | 5814 | 430 | 7.40% |
+| government | False | 1096 | 29 | 2.65% |
+| government | True | 1904 | 42 | 2.21% |
+| opposition | False | 2426 | 79 | 3.26% |
+| opposition | True | 5814 | 213 | 3.66% |
 
-Neither the main party effect nor the party x policy-topic interaction term is statistically significant in the logistic regression (interaction p=0.410).
+Party x policy-topic interaction in the logistic regression: p=0.269.
 
 ## Caveats
 

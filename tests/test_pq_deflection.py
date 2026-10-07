@@ -10,6 +10,7 @@ from linking_layer.pq_deflection import (
     attach_topic,
     extract_pq_headers,
     extract_transferred_pq_nums,
+    parse_announcement,
     resolve_pq_party,
 )
 
@@ -62,6 +63,35 @@ def test_extract_transferred_pq_nums_unbundles_multiple_refs():
     transferred = extract_transferred_pq_nums(utterances)
     assert set(transferred["pq_num"]) == {"10", "11"}
     assert len(transferred) == 2
+
+
+def test_parse_announcement_separates_withdrawn_and_ignores_next_question_header():
+    text = (
+        "The Table has been advised that PQs B/334 and B/341 have been withdrawn. Hon. Members, the Table has "
+        "also been advised that PQ B/362 will be replied by the hon. Minister of National Infrastructure. "
+        "PQ B/415 will be replied by the hon. Ag. Minister of Finance. Hon. David! ROAD UPGRADING (No. B/345) "
+        "Mr F. David (First Member for GRNW & Port Louis West) asked"
+    )
+    parsed = {num: (status, dest) for num, status, dest in parse_announcement(text)}
+    assert parsed["334"][0] == "withdrawn"
+    assert parsed["341"][0] == "withdrawn"
+    assert parsed["362"] == ("transferred", "Minister of National Infrastructure")
+    assert parsed["415"] == ("transferred", "Ag. Minister of Finance")
+    assert "345" not in parsed
+
+
+def test_parse_announcement_handles_following_lists():
+    text = (
+        "Hon. Members, the following Parliamentary Questions will be replied by the Rt. hon. Prime Minister at "
+        "the end of Prime Minister's Question Time, time permitting. PQ No. B/18 in regard to the canal; B/34 in "
+        "regard to the E-Judiciary project. The Table has been advised that the following Parliamentary "
+        "Questions have been withdrawn: B/884, B/862. Hon. Jahangeer!"
+    )
+    parsed = {num: (status, dest) for num, status, dest in parse_announcement(text)}
+    assert parsed["18"] == ("transferred", "Prime Minister")
+    assert parsed["34"] == ("transferred", "Prime Minister")
+    assert parsed["884"][0] == "withdrawn"
+    assert parsed["862"][0] == "withdrawn"
 
 
 def test_resolve_pq_party_matches_and_flags_collision():

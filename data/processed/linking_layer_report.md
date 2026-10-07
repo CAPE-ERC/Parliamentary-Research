@@ -40,6 +40,13 @@ individual topics) or a larger corpus to test properly.
 
 ## H2 reassessed: a real null result at individual-PQ granularity
 
+> **Superseded.** The transfer counts in this section (1,041 transferred;
+> 7.77% vs 8.01%) came from flagging every B/ number in a transfer
+> announcement, which also counted withdrawn PQs and the next question's
+> header as transfers. The corrected clause-level parse finds 418 transfers
+> (363 with a resolved asker). See `h2_reanalysis_report.md` for the
+> corrected, adjusted and clustered H2 results.
+
 Reading a sample of the 226 pnq_transfer utterances found the source of the
 sparsity: 84% are the Speaker's routine end-of-Question-Time announcement
 ("Time over! ... PQ B/757 will be replied by ..."), and each one bundles a

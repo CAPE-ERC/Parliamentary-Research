@@ -17,6 +17,15 @@ referenced inside transfer announcements match a known header in the same
 debate. That lets H2 be tested as intended: transferred ~ asker's party,
 across the full PQ population, rather than a sparse per-topic breakdown.
 
+Announcements are parsed clause by clause. A Speaker announcement typically
+mixes transfers ("PQ B/362 will be replied by the hon. Minister of ...") with
+withdrawals ("PQs B/334 and B/341 have been withdrawn") and then calls the
+next question, whose own "(No. B/xxx)" header follows in the same record. An
+earlier version flagged every B/ number in such a record as transferred,
+which counted withdrawn questions and the next question's header as
+transfers; each number is now assigned to the clause it belongs to, and the
+destination minister of each transfer is kept.
+
 Usage:
     python -m linking_layer.pq_deflection
 """
@@ -39,8 +48,20 @@ from linking_layer.party_resolution import (
 HEADER_RE = re.compile(
     r"\(No\.\s*B/(\d+)\)\s*((?:Mr|Mrs|Ms|Dr|Prof)\.?\s+[^(]+?)\s*\(([^)]+)\)"
 )
-TRANSFER_RE = re.compile(r"(?:will|would) be replied by", re.IGNORECASE)
+TRANSFER_RE = re.compile(
+    r"(?:will|would) be replied by|(?:has|have|had) been transferred to(?= (?:the )?(?:Rt\.? )?hon)", re.IGNORECASE
+)
+WITHDRAWN_RE = re.compile(r"withdrawn", re.IGNORECASE)
 PQNUM_RE = re.compile(r"B/(\d+)")
+NEXT_QUESTION_RE = re.compile(r"\(No\.\s*B/\d+\)")
+# A "following" list ("the following PQs will be replied by X: B/18 ..., B/34 ...")
+# names its questions after the clause; the list runs to the next sentence
+# that starts a new announcement.
+LIST_END_RE = re.compile(r"\.\s+(?=PQ|The Table|Hon|I |Members)|!")
+TITLE_PREFIX_RE = re.compile(r"^(?:the\s+)?(?:Rt\.?\s*)?(?:hon\.?\s*)?(?:Dr\.?\s*)?", re.IGNORECASE)
+DESTINATION_END_RE = re.compile(
+    r";|\s+at the end\b|,\s*time permitting|\bPQs?\b|\bHon\. Members\b|\bThe Table\b|!|:|\.(?=\s+[A-Z])(?<!hon\.)(?<!Ag\.)(?<!Dr\.)(?<!Rt\.)"
+)
 
 
 def extract_pq_headers(utterances: pd.DataFrame) -> pd.DataFrame:
@@ -67,17 +88,70 @@ def extract_pq_headers(utterances: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(subset=["debate_id", "pq_num"]).reset_index(drop=True)
 
 
-def extract_transferred_pq_nums(utterances: pd.DataFrame) -> pd.DataFrame:
-    """One row per distinct (debate_id, pq_num) that appears inside a
-    "will/would be replied by" transfer announcement - unbundling the batched
-    Speaker announcements into individual transferred questions."""
+def _destination(text: str, start: int) -> str:
+    tail = re.sub(r"\s+", " ", text[start:start + 200]).strip()
+    tail = TITLE_PREFIX_RE.sub("", tail).strip()
+    cut = DESTINATION_END_RE.search(tail)
+    return (tail[: cut.start()] if cut else tail).strip(" .,")
+
+
+def parse_announcement(text: str) -> list[tuple[str, str, str | None]]:
+    """(pq_num, status, destination) for every PQ number in one Speaker
+    announcement, where status is 'transferred' or 'withdrawn'. Numbers are
+    assigned to the clause they belong to: normally the next transfer or
+    withdrawal clause, or the preceding clause when it introduces a
+    "following" list. Text from the next question's own header onward is
+    ignored."""
+    header = NEXT_QUESTION_RE.search(text)
+    text = text[: header.start()] if header else text
+
+    markers = []
+    for m in TRANSFER_RE.finditer(text):
+        markers.append((m.start(), m.end(), "transferred", _destination(text, m.end())))
+    for m in WITHDRAWN_RE.finditer(text):
+        markers.append((m.start(), m.end(), "withdrawn", None))
+    markers.sort()
+
+    lists = []
+    for start, end, status, destination in markers:
+        if re.search(r"following", text[max(0, start - 80):start], re.IGNORECASE):
+            first = PQNUM_RE.search(text, end)
+            if first is None:
+                continue
+            stop = LIST_END_RE.search(text, first.end())
+            lists.append((end, stop.start() if stop else len(text), status, destination))
+
+    results = []
+    for m in PQNUM_RE.finditer(text):
+        assigned = next(((st, d) for lo, hi, st, d in lists if lo <= m.start() < hi), None)
+        if assigned is None:
+            assigned = next(((st, d) for start, _, st, d in markers if start >= m.end()), None)
+        if assigned is not None:
+            results.append((m.group(1), assigned[0], assigned[1]))
+    return results
+
+
+def parse_announcements(utterances: pd.DataFrame) -> pd.DataFrame:
+    """One row per distinct (debate_id, pq_num) named in a transfer or
+    withdrawal announcement. A question named in both is a transfer."""
     rows = []
-    mask = utterances["text"].str.contains(TRANSFER_RE, regex=True, na=False)
+    mask = utterances["text"].str.contains(TRANSFER_RE, regex=True, na=False) | utterances["text"].str.contains(
+        WITHDRAWN_RE, regex=True, na=False
+    )
     for r in utterances[mask].itertuples(index=False):
-        for num in PQNUM_RE.findall(str(r.text)):
-            rows.append({"debate_id": r.debate_id, "pq_num": num})
-    df = pd.DataFrame(rows, columns=["debate_id", "pq_num"])
-    return df.drop_duplicates().reset_index(drop=True)
+        for num, status, destination in parse_announcement(str(r.text)):
+            rows.append({"debate_id": r.debate_id, "pq_num": num, "status": status, "destination": destination})
+    df = pd.DataFrame(rows, columns=["debate_id", "pq_num", "status", "destination"])
+    df["_order"] = df["status"].map({"transferred": 0, "withdrawn": 1})
+    return df.sort_values("_order").drop_duplicates(["debate_id", "pq_num"]).drop(columns="_order").reset_index(drop=True)
+
+
+def extract_transferred_pq_nums(utterances: pd.DataFrame) -> pd.DataFrame:
+    """One row per distinct (debate_id, pq_num) transferred to another
+    minister, with the destination minister."""
+    announced = parse_announcements(utterances)
+    transferred = announced[announced["status"] == "transferred"]
+    return transferred[["debate_id", "pq_num", "destination"]].reset_index(drop=True)
 
 
 def resolve_pq_party(headers: pd.DataFrame, registry: Registry) -> pd.DataFrame:
@@ -148,15 +222,16 @@ def build_pq_panel(processed_dir: Path, external_dir: Path) -> pd.DataFrame:
     registry = load_registry(external_dir)
 
     headers = extract_pq_headers(utterances)
-    transferred = extract_transferred_pq_nums(utterances)
+    announced = parse_announcements(utterances)
+    transferred = announced[announced["status"] == "transferred"]
 
     headers = resolve_pq_party(headers, registry)
     headers = attach_topic(headers, utterances, topics)
 
-    transferred_keys = set(zip(transferred["debate_id"], transferred["pq_num"]))
-    headers["transferred"] = [
-        (d, n) in transferred_keys for d, n in zip(headers["debate_id"], headers["pq_num"])
-    ]
+    headers = headers.merge(announced, on=["debate_id", "pq_num"], how="left")
+    headers["transferred"] = headers["status"].eq("transferred")
+    headers["withdrawn"] = headers["status"].eq("withdrawn")
+    headers = headers.drop(columns="status")
 
     n_transfer_refs = len(transferred)
     n_matched = sum(1 for d, n in zip(transferred["debate_id"], transferred["pq_num"]) if (d, n) in set(zip(headers["debate_id"], headers["pq_num"])))
@@ -173,6 +248,7 @@ def run(processed_dir: Path, external_dir: Path) -> None:
     print(f"Transfer references found: {panel.attrs['n_transfer_refs']} "
           f"({panel.attrs['n_transfer_refs_matched']} matched to a known header)")
     print(f"Transferred PQs (unbundled): {panel['transferred'].sum()}")
+    print(f"Withdrawn PQs: {panel['withdrawn'].sum()}")
     print("\nAsker resolution:")
     print(panel["match_method"].value_counts())
     print("\nGov/opp distribution among resolved askers:")

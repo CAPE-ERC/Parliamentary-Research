@@ -84,12 +84,15 @@ def run(processed_dir: Path) -> None:
         f.write(f"- PQs excluded (no match or surname collision): {n_unresolved} ({n_unresolved/n_total:.1%})\n")
         f.write(f"- Transferred PQs among resolved: {n_transferred} ({resolved['transferred'].mean():.1%})\n\n")
 
-        f.write("## Headline: no evidence of party-conditional deflection\n\n")
+        f.write("## Unadjusted party comparison\n\n")
         f.write(f"Transfer rate is **{rate_by_party['government']:.2%}** for government-asked PQs "
                 f"and **{rate_by_party['opposition']:.2%}** for opposition-asked PQs. "
                 f"Fisher's exact test: odds ratio={odds_ratio:.3f}, p={fisher_p:.3f}. "
-                f"Logistic regression confirms this: the opposition coefficient is "
-                f"{party_coef:.4f} (p={party_p:.3f}), not significant.\n\n")
+                f"Logistic regression: the opposition coefficient is "
+                f"{party_coef:.4f} (p={party_p:.3f}).\n\n"
+                "These tests treat PQs as independent, include withdrawn PQs in the denominator and "
+                "have no controls. The adjusted, clustered analysis that the paper reports is in "
+                "`h2_reanalysis_report.md`.\n\n")
 
         f.write("### Contingency table\n\n")
         f.write("| Party | Not transferred | Transferred | Transfer rate |\n|---|---|---|---|\n")
@@ -108,9 +111,8 @@ def run(processed_dir: Path) -> None:
         for (party, is_policy), row in rate_by_party_topic.iterrows():
             f.write(f"| {party} | {is_policy} | {int(row['size'])} | {int(row['sum'])} | {row['mean']:.2%} |\n")
         f.write(
-            "\nNeither the main party effect nor the party x policy-topic interaction term "
-            "is statistically significant in the logistic regression "
-            f"(interaction p={interaction_model.pvalues.get('C(party)[T.opposition]:is_policy[T.True]', float('nan')):.3f}).\n\n"
+            "\nParty x policy-topic interaction in the logistic regression: "
+            f"p={interaction_model.pvalues.get('C(party)[T.opposition]:is_policy[T.True]', float('nan')):.3f}.\n\n"
         )
 
         f.write("## Caveats\n\n")
