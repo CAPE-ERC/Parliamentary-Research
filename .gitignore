@@ -29,6 +29,9 @@ data/external/*
 !data/processed/linking_layer_report.md
 !data/processed/outcome_layer_report.md
 !data/processed/pq_deflection_report.md
+!data/processed/h1_reanalysis_report.md
+!data/processed/h1_topic_contrasts.csv
+!data/processed/h1_sensitivity.csv
 
 # Models / large artifacts
 *.pt
