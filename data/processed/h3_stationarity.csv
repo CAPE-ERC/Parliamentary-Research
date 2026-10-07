@@ -1,0 +1,51 @@
+topic,tested_for_h3,adf_p_attention,kpss_p_attention,adf_p_conflict_any_z,kpss_p_conflict_any_z
+"Air Mauritius, airports and aviation",True,0.0034585065247027063,0.034742856830735296,0.0,0.01
+"Arts, culture, artists and copyright",True,5.003858483422672e-23,0.1,3.789904855260052e-30,0.022751415329993807
+"Banking, financial sector and public funds",True,3.3729226559513453e-09,0.01,6.419286616497606e-30,0.012822955190679402
+"Beaches, coastal management and erosion",True,0.0,0.010238648511538865,1.6939616016422112e-07,0.1
+Budget and economic-policy debate (French/mixed),True,2.639848027502245e-11,0.1,1.3732330786126948e-10,0.01
+"Bus services, routes and public transport",True,1.751872916046427e-26,0.1,2.247746234224088e-30,0.04431220397314176
+"CCTV, surveillance and security technology",True,0.0,0.1,0.0,0.01
+"CSR, NGOs and social-development funding",True,2.022127378482468e-30,0.01,6.395617786458114e-30,0.01
+Cancer statistics and annual trends,True,0.0008169161678603586,0.1,1.7379623123438883e-16,0.1
+"Child protection, family welfare and shelters",True,3.4400559280554194e-06,0.010092552421495328,1.9727096656838792e-05,0.01
+Cooperatives and SME discourse with member exchanges,True,1.0926827887104814e-22,0.0661620362083325,1.3692751138373902e-10,0.01
+"Courts, prosecutions and legal cases",True,1.0179038520468998e-11,0.01,2.0234569517397475e-10,0.01
+"Disability services, training and employment",True,2.02614646507818e-30,0.1,2.3213884531244457e-30,0.03416622356175007
+Domestic and gender-based violence,True,0.0,0.1,9.595768339978763e-14,0.1
+"Drug control, trafficking and treatment",True,7.380238701539565e-29,0.1,3.280815719235959e-10,0.01
+Electric and motor vehicles with financial figures,True,0.0,0.01,2.3738024456000873e-30,0.015000842276832476
+"Electricity, energy and renewable power",True,1.296305433927509e-13,0.01,9.416522950002284e-08,0.01
+"Employment, workers and jobseekers",True,0.0,0.01,2.623322993081011e-16,0.01
+Fire and rescue services,True,0.004295215611063656,0.1,0.0,0.01
+"Fisheries, marine resources and vessels",True,3.152643854607278e-30,0.1,3.2779723745666424e-29,0.01
+"Foreign affairs, Chagos and international relations",True,0.0008921041750212931,0.01,3.580136582298368e-29,0.01
+"Gambling, horse racing and betting regulation",True,0.0,0.1,0.0,0.06087424791135204
+Hajj pilgrimage and Saudi Arabia,True,0.0,0.08368125790959845,0.0,0.01
+"Healthcare services, hospitals and medical workforce",True,1.0644845906062672e-21,0.1,2.3843806736066465e-20,0.060328609626530375
+"Livestock, veterinary services and animal welfare",True,4.485037474777962e-08,0.1,1.4697516480666145e-08,0.08514975745810363
+"MBC broadcasting, news and media governance",True,1.3693020379950682e-15,0.1,1.0921160095450881e-17,0.01
+Metro Express and light-rail transport,True,1.0306997605813305e-07,0.04263465546908967,1.4759632151803807e-08,0.01
+"Motor vehicles, imports and NLTA regulation",True,0.0,0.1,0.0,0.01
+"Pensions, retirement and social-security benefits",True,4.304676859101995e-30,0.1,1.133948994770873e-15,0.09144314558814542
+"Petroleum prices, duties and imports",True,0.0,0.022374989995226628,0.0,0.01
+Police investigations and criminal cases,True,3.900881038570594e-10,0.01,3.677870932554094e-30,0.01
+"Police, prisons and home-affairs administration",True,2.757480638352565e-30,0.1,3.573510786311342e-06,0.01
+Port Louis local affairs and governance,True,2.0451510104094076e-30,0.09245731385056524,5.696298348048548e-15,0.01
+Primary and secondary education,True,0.0,0.1,3.5478496331402376e-16,0.01
+"Public buildings, construction and renovation",True,2.4103993827836092e-29,0.032786682548620626,3.3223981238690027e-07,0.01
+"Public finance, banking and funds",True,1.4475340038325208e-06,0.01,1.6516994176279335e-20,0.01
+"Road construction, traffic and bridges",True,2.6459814334356312e-30,0.1,4.1129907469315706e-18,0.01
+"Road safety, driving and traffic accidents",True,1.2007486697228634e-22,0.1,0.0,0.015099099277268189
+Rodrigues regional governance and development,True,5.323071283416217e-22,0.09637213452645717,1.8142216038975524e-06,0.01
+"SMEs, entrepreneurship and business support",True,0.0,0.1,2.426687574970217e-30,0.02992979099132151
+Social housing and NHDC housing units,True,0.0,0.1,5.2803320787453425e-30,0.01562718017150222
+"Solid waste, landfill and plastics management",True,2.0455224759769352e-30,0.1,3.4387931457005586e-30,0.06554388553631572
+"Sport, football and athlete development",True,2.1247395227114826e-30,0.01,2.7342084689403247e-13,0.019754723382123817
+"Sports grounds, stadiums and facilities",True,0.0,0.07873480498965404,1.011608280846497e-21,0.01
+"State land, leases and land administration",True,0.09840226129022928,0.01,3.1127068089990426e-30,0.01
+"Sugar, agriculture and food production",True,2.5337225557661688e-25,0.06890467412124662,8.913133612239394e-15,0.01
+Tertiary education and university training,True,0.0,0.022856590690293936,6.768352828806031e-30,0.017827127882278904
+"Tourism, hotels and visitor economy",True,0.0,0.07947616625945438,0.0,0.1
+"Vaccination, COVID-19 and public health",True,0.0006879926661612917,0.03626507727508746,0.0,0.010514521177362412
+"Water supply, drainage and sewerage infrastructure",True,2.4751376208540226e-17,0.1,2.5492059333132367e-21,0.01

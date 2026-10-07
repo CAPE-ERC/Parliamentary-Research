@@ -35,6 +35,10 @@ data/external/*
 !data/processed/h2_reanalysis_report.md
 !data/processed/h2_party_models.csv
 !data/processed/h2_sensitive_contrasts.csv
+!data/processed/h3_reanalysis_report.md
+!data/processed/h3_pooled_models.csv
+!data/processed/h3_per_topic.csv
+!data/processed/h3_stationarity.csv
 
 # Models / large artifacts
 *.pt
