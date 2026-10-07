@@ -11,6 +11,7 @@ env/
 data/raw/*
 data/processed/*
 data/external/*
+data/validation/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
@@ -39,6 +40,8 @@ data/external/*
 !data/processed/h3_pooled_models.csv
 !data/processed/h3_per_topic.csv
 !data/processed/h3_stationarity.csv
+!data/processed/topic_assignment_confidence_report.md
+!data/processed/outlier_robustness_report.md
 
 # Models / large artifacts
 *.pt

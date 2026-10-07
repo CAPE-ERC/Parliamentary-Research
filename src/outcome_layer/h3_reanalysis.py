@@ -57,7 +57,10 @@ TWO_WAY = ("topic", "debate_id")
 # Panel construction
 # --------------------------------------------------------------------------
 
-def build_panel(processed_dir: Path) -> pd.DataFrame:
+def build_panel(processed_dir: Path, exclude: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Topic x sitting panel. `exclude` holds (debate_id, seq_index) keys of
+    utterances to drop from topic counts (they still count in the sitting
+    total), e.g. low-confidence topic assignments."""
     utterances = pd.read_parquet(
         processed_dir / "utterances.parquet",
         columns=["debate_id", "seq_index", "assembly", "sitting_date", "is_stage_direction"],
@@ -83,6 +86,11 @@ def build_panel(processed_dir: Path) -> pd.DataFrame:
                                                  on=["debate_id", "seq_index"])
     totals = speech.groupby("debate_id").size().rename("total_utterances")
     policy = speech[speech["predicted_label"] != "non_policy"]
+    if exclude is not None:
+        drop = policy.set_index(["debate_id", "seq_index"]).index.isin(
+            exclude.set_index(["debate_id", "seq_index"]).index
+        )
+        policy = policy[~drop]
     per_cell = (
         policy.groupby(["predicted_label", "debate_id"])
         .agg(n_topic=("y_any", "size"), n_any=("y_any", "sum"), n_ruling=("y_ruling", "sum"))
