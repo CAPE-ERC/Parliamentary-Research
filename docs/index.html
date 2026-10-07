@@ -429,16 +429,15 @@
       classifier generations, evaluated comparatively), the Procedural layer (rule-based tagging
       combined with an LSTM sequence classifier), the Linking layer (mixed-effects regression), and
       the Outcome layer (a Granger-style time-series analysis) — are complete and merged to
-      <code>main</code>. All three hypotheses under investigation returned genuine null results
-      once adequately powered and formally tested, each requiring substantial preparatory work
-      before testing could proceed. H1 (asymmetric procedural enforcement) required construction
-      of a verified speaker/party registry, absent which the government-versus-opposition
-      comparison would have relied on a severely underpowered proxy. H3 (attention cooling
-      following procedural conflict) required a complete, chronologically ordered and zero-filled
-      time series rather than an index restricted to a topic's subsequent appearances. H2
-      (question deflection) required unbundling a routine Speaker announcement into individually
-      identified Parliamentary Questions and resolving each question's asker, which recovered
-      12,426 testable questions from an initially sparse 226-utterance signal.
+      <code>main</code>. Following an external review, all three hypotheses were re-estimated with
+      effect sizes, confidence intervals and equivalence tests
+      (<code>h1_reanalysis_report.md</code>, <code>h2_reanalysis_report.md</code>,
+      <code>h3_reanalysis_report.md</code>). H1 (differential chair intervention) and H3 (attention
+      cooling after procedural conflict) are bounded null results: the estimates are close to zero
+      and exclude effects of substantively meaningful size. H2 (differential question transfer) is
+      inconclusive: after a parsing error in the transfer measure was corrected, Opposition-asked
+      questions lean towards being transferred more often, but the difference is not statistically
+      significant.
     </p>
   </section>
 
@@ -887,39 +886,42 @@
 
     <div class="kpi-row">
       <div class="kpi-tile"><div class="value">13,032</div><div class="label">opposition utterances resolved <span style="color:var(--text-muted); font-weight:400;">(was 145)</span></div></div>
-      <div class="kpi-tile"><div class="value">4,735</div><div class="label">panel cells modeled</div></div>
-      <div class="kpi-tile"><div class="value">4</div><div class="label">chairs (random effect)</div></div>
-      <div class="kpi-tile"><div class="value">48</div><div class="label">topics represented</div></div>
+      <div class="kpi-tile"><div class="value">23,706</div><div class="label">government utterances in the H1 sample</div></div>
+      <div class="kpi-tile"><div class="value">1.01</div><div class="label">party odds ratio (95% CI 0.82–1.24)</div></div>
+      <div class="kpi-tile"><div class="value">0.32</div><div class="label">permutation p, 47 topic × party interactions</div></div>
     </div>
 
-    <h3>H1 — Asymmetric Enforcement: No Significant Effect</h3>
+    <h3>H1 — Differential Intervention: Bounded Null</h3>
     <p class="discussion">
-      The model specification <code>intervention_rate ~ C(topic) × C(party)</code>, with a random
-      intercept by presiding Chair, was fit on the properly powered panel. Only <strong>1 of
-      47</strong> topic × opposition interaction terms is significant at p&nbsp;&lt;&nbsp;0.05,
-      consistent with the rate expected by chance across 47 independent tests (approximately 2.35
-      false positives expected under the null hypothesis), and this term does not survive
-      Bonferroni correction. Moreover, the one nominally significant term (Vaccination/COVID-19,
-      p&nbsp;=&nbsp;0.044) points in the direction opposite to that predicted by H1, and this topic
-      does not fall within the corruption, procurement, or institutional-scandal category around
-      which H1 was originally framed.
+      H1 is estimated at the utterance level (36,738 utterances in 386 sittings): a logit model of
+      whether a chair ruling or interruption follows within three records, with topic and chair
+      fixed effects, log utterance length as an exposure control, and standard errors two-way
+      clustered by sitting and speaker. Raw intervention rates are 20.4% (Government) and 21.0%
+      (Opposition). The Opposition–Government odds ratio is <strong>1.01 (95% CI 0.82–1.24)</strong>,
+      or +0.1 percentage points (−3.1 to +3.3). This excludes a difference as large as the ~5-point
+      copartisan effect reported by Hjorth (2016) (equivalence p&nbsp;=&nbsp;0.002) but not a
+      2-point difference. Interruptions, which are floor events rather than chair actions, make up
+      85% of coded interventions; chair rulings alone give OR 1.01 (0.86–1.18). Two topics differ at
+      raw p&nbsp;&lt;&nbsp;0.05 (Road construction, higher for the Opposition; Vaccination/COVID-19,
+      lower); neither survives correction, and the member-level permutation test of all
+      interactions gives p&nbsp;=&nbsp;0.32.
     </p>
     <p class="discussion" style="font-size:13px;">
-      All 47 topic &#215; opposition interaction terms, plotted by p-value. Only the
-      COVID-19/vaccination term (highlighted) falls below the raw 0.05 threshold, and even this term
-      does not survive Bonferroni correction.
+      Original cell-level specification (superseded): the 47 topic &#215; opposition interaction
+      terms from the mixed model with a chair random intercept, plotted by p-value. The 4,735
+      cells were sitting &#215; chair &#215; topic &#215; party combinations.
     </p>
     <svg viewBox="0 0 700 132" width="100%" height="132" role="img" aria-label="Strip plot of 47 p-values" style="overflow:visible; font-family:system-ui,sans-serif;"><line x1="49.4" y1="16" x2="49.4" y2="102" stroke="var(--status-warning)" stroke-width="1.4" stroke-dasharray="3,3"/><line x1="16.7" y1="16" x2="16.7" y2="102" stroke="var(--status-critical)" stroke-width="1.4" stroke-dasharray="3,3"/><line x1="16" y1="102" x2="684" y2="102" stroke="var(--gridline)" stroke-width="1"/><line x1="16.0" y1="102" x2="16.0" y2="106" stroke="var(--gridline)" stroke-width="1"/><text x="16.0" y="118" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">0</text><line x1="183.0" y1="102" x2="183.0" y2="106" stroke="var(--gridline)" stroke-width="1"/><text x="183.0" y="118" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">0.25</text><line x1="350.0" y1="102" x2="350.0" y2="106" stroke="var(--gridline)" stroke-width="1"/><text x="350.0" y="118" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">0.5</text><line x1="517.0" y1="102" x2="517.0" y2="106" stroke="var(--gridline)" stroke-width="1"/><text x="517.0" y="118" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">0.75</text><line x1="684.0" y1="102" x2="684.0" y2="106" stroke="var(--gridline)" stroke-width="1"/><text x="684.0" y="118" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">1.0</text><circle cx="45.3" cy="47.0" r="5" fill="var(--status-critical)" fill-opacity="1" stroke="var(--surface-1)" stroke-width="1.2"><title>Vaccination, COVID-19 and public health: p=0.0439</title></circle><circle cx="50.7" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Metro Express and light-rail transport: p=0.0519</title></circle><circle cx="78.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Public finance, banking and funds: p=0.0932</title></circle><circle cx="87.6" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Tourism, hotels and visitor economy: p=0.1072</title></circle><circle cx="92.2" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>State land, leases and land administration: p=0.1140</title></circle><circle cx="104.0" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Banking, financial sector and public funds: p=0.1317</title></circle><circle cx="113.0" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Solid waste, landfill and plastics management: p=0.1452</title></circle><circle cx="149.5" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Public buildings, construction and renovation: p=0.1999</title></circle><circle cx="161.9" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Road safety, driving and traffic accidents: p=0.2184</title></circle><circle cx="165.0" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Arts, culture, artists and copyright: p=0.2230</title></circle><circle cx="180.6" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Motor vehicles, imports and NLTA regulation: p=0.2464</title></circle><circle cx="187.0" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Pensions, retirement and social-security benefits: p=0.2560</title></circle><circle cx="196.8" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Foreign affairs, Chagos and international relations: p=0.2707</title></circle><circle cx="229.1" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Electricity, energy and renewable power: p=0.3190</title></circle><circle cx="235.3" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Water supply, drainage and sewerage infrastructure: p=0.3283</title></circle><circle cx="259.8" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Sugar, agriculture and food production: p=0.3649</title></circle><circle cx="260.6" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>CSR, NGOs and social-development funding: p=0.3661</title></circle><circle cx="281.2" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Bus services, routes and public transport: p=0.3970</title></circle><circle cx="299.9" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Healthcare services, hospitals and medical workforce: p=0.4250</title></circle><circle cx="301.4" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Sports grounds, stadiums and facilities: p=0.4272</title></circle><circle cx="315.4" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Gambling, horse racing and betting regulation: p=0.4482</title></circle><circle cx="316.5" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Police, prisons and home-affairs administration: p=0.4499</title></circle><circle cx="335.9" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Domestic and gender-based violence: p=0.4789</title></circle><circle cx="347.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Primary and secondary education: p=0.4959</title></circle><circle cx="360.5" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Disability services, training and employment: p=0.5157</title></circle><circle cx="377.6" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Port Louis local affairs and governance: p=0.5413</title></circle><circle cx="378.2" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Cancer statistics and annual trends: p=0.5422</title></circle><circle cx="385.1" cy="67.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Beaches, coastal management and erosion: p=0.5525</title></circle><circle cx="394.8" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Sport, football and athlete development: p=0.5671</title></circle><circle cx="402.3" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Fire and rescue services: p=0.5783</title></circle><circle cx="432.1" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Budget and economic-policy debate (French/mixed): p=0.6229</title></circle><circle cx="444.7" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Tertiary education and university training: p=0.6418</title></circle><circle cx="458.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Drug control, trafficking and treatment: p=0.6621</title></circle><circle cx="466.2" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Social housing and NHDC housing units: p=0.6740</title></circle><circle cx="482.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Livestock, veterinary services and animal welfare: p=0.6980</title></circle><circle cx="514.4" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Courts, prosecutions and legal cases: p=0.7461</title></circle><circle cx="519.3" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Child protection, family welfare and shelters: p=0.7534</title></circle><circle cx="522.5" cy="67.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Fisheries, marine resources and vessels: p=0.7582</title></circle><circle cx="540.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Electric and motor vehicles with financial figures: p=0.7849</title></circle><circle cx="564.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Rodrigues regional governance and development: p=0.8208</title></circle><circle cx="571.4" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Petroleum prices, duties and imports: p=0.8314</title></circle><circle cx="588.1" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Police investigations and criminal cases: p=0.8564</title></circle><circle cx="611.3" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>CCTV, surveillance and security technology: p=0.8912</title></circle><circle cx="614.3" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Hajj pilgrimage and Saudi Arabia: p=0.8957</title></circle><circle cx="625.5" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>MBC broadcasting, news and media governance: p=0.9125</title></circle><circle cx="660.6" cy="47.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>SMEs, entrepreneurship and business support: p=0.9649</title></circle><circle cx="668.1" cy="57.0" r="3.5" fill="var(--series-1)" fill-opacity="0.75" stroke="var(--surface-1)" stroke-width="1.2"><title>Road construction, traffic and bridges: p=0.9762</title></circle><text x="51.3" y="37.0" text-anchor="start" font-size="10.5" font-weight="600" fill="var(--text-primary)">Vaccination (p=0.0439)</text><text x="350.0" y="128" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">topic × opposition interaction p-value, 47 tested topics</text></svg>
     <div class="legend" style="margin-top:2px;"><span class="legend-item"><span class="legend-swatch" style="background:var(--series-1); border-radius:50%;"></span>Not significant</span><span class="legend-item"><span class="legend-swatch" style="background:var(--status-critical); border-radius:50%;"></span>Highlighted topic</span><span class="legend-item"><span class="legend-swatch dash" style="border-color:var(--status-warning);"></span>raw p=0.05</span><span class="legend-item"><span class="legend-swatch dash" style="border-color:var(--status-critical);"></span>Bonferroni α=0.0011</span></div>
     <div class="callout">
-      This finding constitutes a genuine null result rather than an artifact of insufficient
-      statistical power; the registry-construction work was undertaken specifically to ensure that
-      a null result, should one occur, would be trustworthy rather than an artifact of the earlier
-      145-utterance proxy. No broad pattern of topic-conditional asymmetric intervention was
-      identified across the corpus.
+      The null is bounded rather than absolute: it rules out large partisan asymmetries in
+      intervention but not differences of up to about three percentage points. Among backbench
+      members, Opposition contributions are less likely to be followed by a chair ruling
+      (OR 0.72), the opposite of H1; in the Eighth Assembly, Opposition contributions attract more
+      floor interruptions. Full results: <code>h1_reanalysis_report.md</code>.
     </div>
 
-    <h3>H2 — Question Deflection: No Significant Effect</h3>
+    <h3>H2 — Question Deflection: Inconclusive</h3>
     <p class="discussion">
       The <code>pnq_transfer</code> tag is rare at the utterance level (226 of 211,567 utterances
       corpus-wide), and an utterance-level breakdown by topic is underpowered, with most cells
@@ -931,31 +933,35 @@
       used for role resolution in Layer 0, allowing individual questions to be identified
       independently of this batching and each question's asker to be resolved via the existing
       speaker registry (<code>src/linking_layer/pq_deflection.py</code>). This procedure yields
-      12,426 distinct Parliamentary Questions corpus-wide, of which 1,041 were transferred and
-      11,240 have a resolved asker party.
+      12,426 distinct Parliamentary Questions corpus-wide, of which 11,240 have a resolved asker
+      party. Announcements are parsed clause by clause: an earlier version flagged every question
+      number in an announcement as transferred, which also counted questions announced as withdrawn
+      and the next question called. The corrected parse finds 418 transfers (previously reported as
+      1,041) and 2,822 withdrawals.
     </p>
 
     <div class="kpi-row">
       <div class="kpi-tile"><div class="value">12,426</div><div class="label">distinct Parliamentary Questions identified</div></div>
-      <div class="kpi-tile"><div class="value">1,041</div><div class="label">transferred (unbundled)</div></div>
-      <div class="kpi-tile"><div class="value">90.5%</div><div class="label">askers resolved to a party</div></div>
-      <div class="kpi-tile"><div class="value">0.694</div><div class="label">Fisher's exact p-value</div></div>
+      <div class="kpi-tile"><div class="value">418</div><div class="label">transferred (clause-level parse)</div></div>
+      <div class="kpi-tile"><div class="value">1.31</div><div class="label">adjusted odds ratio (95% CI 0.89–1.94)</div></div>
+      <div class="kpi-tile"><div class="value">0.17</div><div class="label">p-value, adjusted model</div></div>
     </div>
 
-    <h4 style="font-size:14px; margin:20px 0 8px; color:var(--text-primary);">Transfer rate by asker party</h4>
+    <h4 style="font-size:14px; margin:20px 0 8px; color:var(--text-primary);">Transfer rate by asker party (resolved, non-withdrawn questions)</h4>
     <div class="barchart" role="img" aria-label="Transfer rate by asker party">
-      <div class="bar-row"><div class="bar-label">Opposition</div><div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--series-2);"></div></div><div class="bar-value">8.01%</div></div>
-      <div class="bar-row"><div class="bar-label">Government</div><div class="bar-track"><div class="bar-fill" style="width:97%; background:var(--series-1);"></div></div><div class="bar-value">7.77%</div></div>
+      <div class="bar-row"><div class="bar-label">Opposition</div><div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--series-2);"></div></div><div class="bar-value">4.4%</div></div>
+      <div class="bar-row"><div class="bar-label">Government</div><div class="bar-track"><div class="bar-fill" style="width:77%; background:var(--series-1);"></div></div><div class="bar-value">3.4%</div></div>
     </div>
     <p class="discussion">
-      The transfer rate is 7.77% for government-asked questions and 8.01% for opposition-asked
-      questions (Fisher's exact test: odds ratio = 1.034, p = 0.694). A logistic regression yields
-      the same conclusion: the coefficient on opposition is 0.0335 (p = 0.673), not significant.
-      Restricting the sample to the 50 labeled Policy domains — the category of question H2 was
-      originally framed around — does not alter this result: 7.41% (government) versus 7.40%
-      (opposition), with a non-significant party &#215; policy-topic interaction term (p = 0.410).
-      This constitutes a well-powered null result. Full tables and limitations are documented in
-      <code>pq_deflection_report.md</code>.
+      Among the 8,781 resolved, non-withdrawn questions, 3.4% of government-asked and 4.4% of
+      opposition-asked questions were transferred. Conditioning on Assembly term, oral or written
+      section and the addressed minister, with standard errors clustered by asker and sitting, the
+      odds ratio is 1.31 (95% CI 0.89–1.94; +1.0 percentage point, −0.4 to +2.3). Under the extended
+      accountability lexicon, sensitive opposition questions are transferred more often (OR 1.90,
+      1.04–3.46), but the party &#215; sensitivity interaction is not significant. Transfer types
+      (acting-minister cover, Prime-Ministerial delegation, lateral) do not differ by party. The
+      evidence leans towards more frequent transfer of opposition questions but is inconclusive.
+      Full results: <code>h2_reanalysis_report.md</code>.
     </p>
 
     <h3>Additional corrections arising from data validation</h3>
@@ -1018,7 +1024,16 @@
       <div class="kpi-tile"><div class="value">1</div><div class="label">survives Bonferroni</div></div>
     </div>
 
-    <h3>H3 — Attention Cooling: No Significant Effect</h3>
+    <h3>H3 — Attention Cooling: Bounded Null</h3>
+    <div class="callout">
+      <strong>Revised estimate.</strong> With conflict defined only where a topic is raised, topic and
+      sitting fixed effects, and two-way clustered standard errors, a one-SD increase in conflict
+      changes next-sitting attention by +0.4% of mean attention (95% CI −3.5% to +4.2%), excluding
+      effects of ±10%. The one Granger result that survived correction below (COVID-19) has a
+      positive coefficient, so it shows predictive precedence rather than cooling. Eight of 50
+      per-topic coefficients are significant at p&nbsp;&lt;&nbsp;0.05 (seven negative; one survives
+      Bonferroni). Full results: <code>h3_reanalysis_report.md</code>. The original analysis follows.
+    </div>
     <p class="discussion">
       Per-topic Granger causality tests (lag 1, <code>conflict_rate → attention_share</code>) were
       conducted for the 38 topics exhibiting sufficient conflict-sitting variation to permit
@@ -1035,12 +1050,10 @@
       no measurable evidence that procedural conflict reduces subsequent attention.
     </p>
     <div class="callout">
-      This result constitutes a genuine null finding rather than a power artifact: the full
-      402-sitting series was available for every topic, and the two independent tests (per-topic
-      Granger causality and the pooled panel model) are in agreement. Considered alongside the null
-      result for H1, the corpus provides no broad evidence that procedural friction is employed to
-      selectively suppress particular topics, either within individual sittings (H1) or across time
-      (H3).
+      The original pooled coefficient (−0.0001 to −0.0002 for conflict moving from 0% to 100%)
+      corresponds to about −0.2% of mean attention per standard deviation of conflict. The original
+      series set conflict to zero when a topic was absent; the revised estimate above separates
+      absence from the absence of conflict.
     </div>
 
     <h3>Per-topic results across all lags</h3>
@@ -1165,50 +1178,43 @@
       </thead>
       <tbody>
         <tr>
-          <td class="strong">H1 — Asymmetric enforcement</td>
+          <td class="strong">H1 — Differential intervention</td>
           <td>Whether the Chair intervenes — through rulings or interruptions — more frequently
             when the opposition raises a given topic than when the government does.</td>
-          <td><span class="badge good">No significant effect</span> Of 47 topic-by-party
-            interaction terms tested, only one differed from chance expectation, and its direction
-            was opposite to that predicted by the asymmetric-enforcement hypothesis.</td>
+          <td><span class="badge good">Bounded null</span> Odds ratio 1.01 (0.82–1.24); +0.1
+            percentage points (−3.1 to +3.3). Differences of ±5 points are excluded, ±2 points are
+            not. No robust topic-specific differences.</td>
         </tr>
         <tr>
-          <td class="strong">H2 — Question deflection</td>
-          <td>Whether questions on sensitive subjects are deferred to a later sitting more
-            frequently than questions on routine subjects.</td>
-          <td><span class="badge good">No significant effect</span> Of 11,240 individually
-            identified questions with a known asker, the transfer rate for opposition-asked
-            questions (8.01%) does not differ significantly from that for government-asked
-            questions (7.77%), including when restricted to sensitive policy subjects
-            specifically.</td>
+          <td class="strong">H2 — Differential deflection</td>
+          <td>Whether Parliamentary Questions, particularly sensitive ones, are transferred between
+            ministers more often when asked by the opposition than by the government.</td>
+          <td><span class="badge warn">Inconclusive</span> Adjusted odds ratio 1.31 (0.89–1.94);
+            +1.0 percentage point (−0.4 to +2.3). Sensitive questions (extended lexicon): OR 1.90
+            (1.04–3.46); the party &#215; sensitivity interaction is not significant.</td>
         </tr>
         <tr>
           <td class="strong">H3 — Attention cooling</td>
           <td>Whether a procedurally contentious exchange on a given topic reduces subsequent
             attention to that topic.</td>
-          <td><span class="badge good">No significant effect</span> Subsequent attention to a
-            topic is predicted primarily by its prior level of attention rather than by the degree
-            of procedural conflict it generated. Observed fluctuations correspond more closely to
-            external events, such as a public-health emergency or the completion of an
-            infrastructure project, than to procedural friction.</td>
+          <td><span class="badge good">Bounded null</span> +0.4% of mean attention per SD of
+            conflict (−3.5% to +4.2%); effects of ±10% are excluded. A minority of topics show
+            topic-specific negative associations.</td>
         </tr>
       </tbody>
     </table>
     </div>
 
     <p class="discussion">
-      Three null findings might, on a superficial reading, be interpreted as an absence of
-      results. Such an interpretation would understate their significance. The analytic pipeline
-      was designed specifically to detect a subtle and structural form of bias, incorporating
-      statistical safeguards — including Bonferroni correction applied across each set of
-      per-topic tests — to prevent isolated, chance-level findings from being mistaken for a
-      systematic pattern, and, in the case of H2, unbundling a sparse utterance-level signal into
-      an individually identified, adequately powered population before concluding that no effect
-      was present. Having applied this design, the analysis finds no broad evidence that
-      procedural authority is being exercised to selectively suppress particular voices or
-      subjects, whether within individual sittings, across time, or in the handling of individual
-      questions. This constitutes a substantive empirical finding regarding institutional function
-      along the three dimensions examined.
+      The results are reported as effect sizes with confidence intervals rather than as
+      significance verdicts. For H1 and H3 the intervals are narrow enough to exclude effects of
+      substantively meaningful size, but not small effects; for H2 the evidence is inconclusive.
+      The three tests are complementary rather than independent, because they share the corpus,
+      the speaker–party registry and parts of the classification pipeline. Two measurement
+      corrections made during the review changed results: separating chair rulings from floor
+      interruptions in H1, and parsing transfer announcements clause by clause in H2. A
+      human-annotation validation of the text-derived measures is under way
+      (<code>src/validation/</code>).
     </p>
     <p class="discussion">
       These findings should not be interpreted as a comprehensive assessment of procedural
@@ -1222,10 +1228,11 @@
       preliminary results.
     </p>
     <div class="callout">
-      <strong>Summary of findings.</strong> The analysis finds no broad evidence of asymmetric
-      procedural enforcement (H1), targeted deflection of questions by the asker's party (H2), or
-      attention suppression following procedural conflict (H3), across three independently
-      constructed and adequately powered tests.
+      <strong>Summary of findings.</strong> No overall partisan asymmetry in chair intervention
+      (H1; OR 1.01, 0.82–1.24) and no average attention cooling after procedural conflict (H3;
+      +0.4% of mean attention, −3.5% to +4.2%), both bounded nulls. Opposition questions lean
+      towards being transferred more often (H2; OR 1.31, 0.89–1.94), but the evidence is
+      inconclusive.
     </div>
   </section>
 
