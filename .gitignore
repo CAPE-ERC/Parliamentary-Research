@@ -13,6 +13,8 @@ data/processed/*
 data/external/*
 data/validation/*
 !data/validation/annotation_workbook.xlsx
+!data/validation/annotation_key.parquet
+!data/validation/annotation_validation_report.md
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
